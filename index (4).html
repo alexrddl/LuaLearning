@@ -1,0 +1,3661 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="Интерактивный курс по Lua для Roblox: 18 уроков, код запускается в браузере, задачи проверяются автоматически.">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>Лунный код</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Unbounded:wght@500;700&display=swap">
+<style>
+/* Лунный код.
+   Макет: слева карта курса, справа урок колонкой в 46rem.
+   Lua по-португальски значит «луна», поэтому прогресс показывает фаза луны.
+   Цвет только в подсветке кода и у одной акцентной синей; всё остальное сдержанное. */
+:root {
+  --bg: #f1f3f9;
+  --surface: #ffffff;
+  --surface-2: #e8ecf5;
+  --line: #d6dcea;
+  --line-strong: #b9c2d8;
+  --fg: #151b2d;
+  --muted: #566280;
+  --accent: #1d5fd8;
+  --accent-ink: #ffffff;
+  --accent-soft: #e3ecfc;
+  --moon: #e0ae2b;
+  --moon-dim: #d3daea;
+  --ok: #14733a;
+  --ok-bg: #dcf2e4;
+  --bad: #b42334;
+  --bad-bg: #fbe3e6;
+  --warn: #8a5a00;
+  --code-bg: #f8fafd;
+  --code-fg: #1b2238;
+  --sel: rgba(29, 95, 216, 0.22);
+  --t-kw: #8a36cc;
+  --t-str: #17784a;
+  --t-num: #b04f08;
+  --t-com: #66738f;
+  --t-bi: #1d5fd8;
+  --display: 'Unbounded', 'Trebuchet MS', 'Segoe UI', system-ui, sans-serif;
+  --body: 'Golos Text', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #0b1020;
+    --surface: #121a2f;
+    --surface-2: #1a2440;
+    --line: #243153;
+    --line-strong: #364570;
+    --fg: #e6eaf6;
+    --muted: #93a0c0;
+    --accent: #5b9bff;
+    --accent-ink: #07142e;
+    --accent-soft: #172846;
+    --moon: #f1d77a;
+    --moon-dim: #2a3556;
+    --ok: #5fd392;
+    --ok-bg: #0f2e22;
+    --bad: #ff8590;
+    --bad-bg: #35141b;
+    --warn: #e8b64c;
+    --code-bg: #0a0f1d;
+    --code-fg: #dce3f5;
+    --sel: rgba(91, 155, 255, 0.3);
+    --t-kw: #c792ea;
+    --t-str: #8cd9a6;
+    --t-num: #f4a261;
+    --t-com: #7f8cab;
+    --t-bi: #7db2ff;
+    color-scheme: dark;
+  }
+}
+:root[data-theme='dark'] {
+  --bg: #0b1020;
+  --surface: #121a2f;
+  --surface-2: #1a2440;
+  --line: #243153;
+  --line-strong: #364570;
+  --fg: #e6eaf6;
+  --muted: #93a0c0;
+  --accent: #5b9bff;
+  --accent-ink: #07142e;
+  --accent-soft: #172846;
+  --moon: #f1d77a;
+  --moon-dim: #2a3556;
+  --ok: #5fd392;
+  --ok-bg: #0f2e22;
+  --bad: #ff8590;
+  --bad-bg: #35141b;
+  --warn: #e8b64c;
+  --code-bg: #0a0f1d;
+  --code-fg: #dce3f5;
+  --sel: rgba(91, 155, 255, 0.3);
+  --t-kw: #c792ea;
+  --t-str: #8cd9a6;
+  --t-num: #f4a261;
+  --t-com: #7f8cab;
+  --t-bi: #7db2ff;
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html,
+body {
+  min-height: 100%;
+}
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--body);
+  font-size: 1rem;
+  line-height: 1.65;
+  -webkit-text-size-adjust: 100%;
+}
+h1,
+h2,
+h3 {
+  margin: 0;
+  text-wrap: balance;
+}
+p {
+  margin: 0;
+}
+a {
+  color: var(--accent);
+}
+code {
+  font-family: var(--mono);
+  font-size: 0.88em;
+  background: var(--surface-2);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  overflow-wrap: anywhere;
+}
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ───── Каркас ───── */
+.app {
+  display: grid;
+  grid-template-columns: 17.5rem minmax(0, 1fr);
+  min-height: 100vh;
+}
+.side {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  align-self: start;
+  height: calc(100vh - env(safe-area-inset-top, 0px));
+  overflow-y: auto;
+  background: var(--surface);
+  border-right: 1px solid var(--line);
+  padding: 1.25rem 1rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.main {
+  min-width: 0;
+  padding-block: clamp(1.25rem, 3vw, 2.5rem) 4rem;
+  padding-inline: clamp(1rem, 4vw, 3rem);
+}
+.topbar {
+  display: none;
+}
+
+/* ───── Бренд и луна ───── */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: var(--fg);
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+.brand svg {
+  flex: none;
+}
+.brand-name {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  line-height: 1.1;
+  display: block;
+}
+.brand-sub {
+  font-size: 0.8rem;
+  color: var(--muted);
+  display: block;
+}
+.progress {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+.bar {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--moon-dim);
+  overflow: hidden;
+}
+.bar > i {
+  display: block;
+  height: 100%;
+  background: var(--moon);
+  transition: width 0.4s ease;
+}
+
+/* ───── Навигация ───── */
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.nav-mod h2 {
+  font-family: var(--body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.35rem;
+  padding-inline: 0.5rem;
+}
+.nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.nav a {
+  display: grid;
+  grid-template-columns: 1.5rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.5rem;
+  border-radius: 8px;
+  color: var(--fg);
+  text-decoration: none;
+  font-size: 0.92rem;
+  line-height: 1.35;
+}
+.nav a:hover {
+  background: var(--surface-2);
+}
+.nav a[aria-current='page'] {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+.nav .num {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+  border: 1px solid var(--line-strong);
+}
+.nav .done .num {
+  background: var(--moon);
+  border-color: var(--moon);
+  color: #1b2238;
+}
+
+/* ───── Общее содержимое ───── */
+.view {
+  max-width: 46rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.view.wide {
+  max-width: 62rem;
+}
+.eyebrow {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+h1 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(1.45rem, 1.1rem + 1.8vw, 2.25rem);
+  line-height: 1.18;
+}
+.lead {
+  font-size: 1.1rem;
+  color: var(--muted);
+  max-width: 62ch;
+}
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.body > p,
+.body > ul {
+  max-width: 66ch;
+}
+.body h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-top: 0.75rem;
+}
+.body ul {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.note {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  max-width: 66ch;
+  font-size: 0.95rem;
+}
+.note::before {
+  content: 'Заметка';
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.25rem;
+}
+.tbl {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+}
+.tbl table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.93rem;
+}
+.tbl th,
+.tbl td {
+  text-align: left;
+  padding: 0.55rem 0.85rem;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+.tbl tr:last-child td {
+  border-bottom: 0;
+}
+.tbl th {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ───── Кнопки ───── */
+.btn {
+  font: 600 0.92rem var(--body);
+  color: var(--fg);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  min-height: 2.5rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+}
+.btn:hover {
+  border-color: var(--accent);
+}
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+.btn-primary:hover {
+  filter: brightness(1.08);
+}
+.btn-ghost {
+  border-color: transparent;
+  background: transparent;
+  color: var(--muted);
+}
+.btn svg {
+  flex: none;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+.actions .spacer {
+  flex: 1;
+}
+.kbd {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+/* ───── Редактор кода ───── */
+.ed {
+  display: flex;
+  background: var(--code-bg);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  font: 13.5px/1.65 var(--mono);
+  color: var(--code-fg);
+}
+.ed:focus-within {
+  border-color: var(--accent);
+}
+.ed-gutter {
+  margin: 0;
+  flex: none;
+  width: 2.6rem;
+  padding: 12px 8px 12px 0;
+  text-align: right;
+  color: var(--t-com);
+  border-right: 1px solid var(--line);
+  user-select: none;
+  font: inherit;
+  white-space: pre;
+}
+.ed-gutter .err {
+  color: var(--bad);
+  font-weight: 600;
+}
+.ed-body {
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.ed-inner {
+  position: relative;
+  min-width: 100%;
+  width: max-content;
+}
+.ed-hl,
+.ed-ta {
+  margin: 0;
+  padding: 12px 16px;
+  font: inherit;
+  tab-size: 4;
+  white-space: pre;
+  letter-spacing: normal;
+  word-spacing: normal;
+  border: 0;
+}
+.ed-hl {
+  min-height: 4.5em;
+  pointer-events: none;
+  color: var(--code-fg);
+}
+.ed-ta {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  resize: none;
+  overflow: hidden;
+  background: transparent;
+  color: transparent;
+  caret-color: var(--fg);
+  outline: none;
+  border-radius: 0;
+  -webkit-text-fill-color: transparent;
+}
+.ed-ta::selection {
+  background: var(--sel);
+  -webkit-text-fill-color: transparent;
+}
+.t-k {
+  color: var(--t-kw);
+}
+.t-s {
+  color: var(--t-str);
+}
+.t-n {
+  color: var(--t-num);
+}
+.t-c {
+  color: var(--t-com);
+  font-style: italic;
+}
+.t-b {
+  color: var(--t-bi);
+}
+.ed.readonly .ed-ta {
+  cursor: text;
+}
+
+/* ───── Вывод ───── */
+.out {
+  background: var(--surface-2);
+  border-radius: 10px;
+  padding: 0.7rem 1rem;
+  font: 13px/1.6 var(--mono);
+  max-height: 18rem;
+  overflow: auto;
+  color: var(--fg);
+}
+.out .ln {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.out .k-warn {
+  color: var(--warn);
+}
+.out .k-err {
+  color: var(--bad);
+}
+.out .k-hint,
+.out .k-dim {
+  color: var(--muted);
+  font-family: var(--body);
+  font-size: 0.88rem;
+}
+.out .k-hint {
+  margin-top: 0.25rem;
+}
+
+/* ───── Пример и задание ───── */
+.example {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-width: 0;
+}
+.task {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+  margin-top: 0.75rem;
+}
+.task-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+.task-head h2 {
+  font-family: var(--display);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+.pill {
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.6rem;
+  border-radius: 99px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.pill.ok {
+  background: var(--ok-bg);
+  color: var(--ok);
+}
+.task-prompt {
+  max-width: 66ch;
+}
+.hintbox {
+  background: var(--surface-2);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  max-width: 66ch;
+  font-size: 0.95rem;
+}
+.verdict {
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+}
+.verdict .msg {
+  flex: 1;
+  min-width: 12rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.verdict.ok {
+  background: var(--ok-bg);
+  color: var(--ok);
+}
+.verdict.bad {
+  background: var(--bad-bg);
+  color: var(--bad);
+}
+.verdict strong {
+  display: block;
+}
+
+/* ───── Викторина ───── */
+.quiz {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.q {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 1rem 1.1rem;
+  margin: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.q legend {
+  font-weight: 600;
+  padding: 0;
+  float: left;
+  width: 100%;
+  margin-bottom: 0.6rem;
+}
+.q legend + * {
+  clear: both;
+}
+.opt {
+  font: inherit;
+  text-align: left;
+  color: var(--fg);
+  background: var(--bg);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  padding: 0.55rem 0.85rem;
+  cursor: pointer;
+}
+.opt:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+.opt.ok {
+  background: var(--ok-bg);
+  border-color: var(--ok);
+  color: var(--ok);
+}
+.opt.bad {
+  background: var(--bad-bg);
+  border-color: var(--bad);
+  color: var(--bad);
+}
+.opt:disabled {
+  cursor: default;
+}
+.why {
+  font-size: 0.93rem;
+  color: var(--muted);
+}
+
+/* ───── Пагинация ───── */
+.pager {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+}
+
+/* ───── Главная ───── */
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 26rem);
+  gap: 2rem;
+  align-items: start;
+}
+.hero-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  min-width: 0;
+}
+.hero-moon {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.hero-moon small {
+  color: var(--muted);
+  font-size: 0.85rem;
+  max-width: 20ch;
+  line-height: 1.4;
+}
+.mods {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 1rem;
+}
+.mod {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 1rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-width: 0;
+}
+.mod h3 {
+  font-family: var(--display);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.mod .count {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.mod ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.93rem;
+}
+.mod li a {
+  color: var(--fg);
+  text-decoration: none;
+  display: flex;
+  gap: 0.5rem;
+}
+.mod li a:hover {
+  color: var(--accent);
+}
+.mod li.done a::after {
+  content: '✓';
+  color: var(--ok);
+  margin-left: auto;
+}
+.facts {
+  max-width: 66ch;
+  margin: 0;
+  padding-left: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.95rem;
+}
+.finale {
+  background: var(--surface);
+  border: 1px solid var(--moon);
+  border-radius: 14px;
+  padding: 1.25rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.finale > div {
+  flex: 1;
+  min-width: 14rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.finale h2 {
+  font-family: var(--display);
+  font-size: 1.1rem;
+}
+.alert {
+  background: var(--bad-bg);
+  color: var(--bad);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+}
+
+/* ───── Телефон и планшет ───── */
+@media (max-width: 900px) {
+  .app {
+    display: block;
+  }
+  .topbar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 20;
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+    padding: 0.5rem 16px;
+  }
+  .topbar .brand-name {
+    font-size: 0.95rem;
+  }
+  .topbar .spacer {
+    flex: 1;
+  }
+  .side {
+    position: fixed;
+    top: env(safe-area-inset-top, 0px);
+    bottom: 0;
+    left: 0;
+    height: auto;
+    width: min(20rem, 88vw);
+    z-index: 30;
+    transform: translateX(-102%);
+    transition: transform 0.2s ease;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.25);
+  }
+  .side.open {
+    transform: none;
+  }
+  .scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 25;
+    background: rgba(5, 8, 20, 0.5);
+  }
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (min-width: 901px) {
+  .scrim {
+    display: none;
+  }
+}
+@media (max-width: 520px) {
+  .ed {
+    font-size: 12.5px;
+  }
+  .ed-gutter {
+    width: 2.2rem;
+  }
+  .ed-hl,
+  .ed-ta {
+    padding-inline: 10px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side" id="side" aria-label="Программа курса">
+    <button class="brand" type="button" data-go="home">
+      <span id="sideMoon"></span>
+      <span><span class="brand-name">Лунный код</span><span class="brand-sub">Lua и Roblox Studio</span></span>
+    </button>
+    <div class="progress"><span id="progText"></span><div class="bar"><i id="progBar" style="width:0"></i></div></div>
+    <nav class="nav" id="nav" aria-label="Уроки"></nav>
+  </aside>
+  <div class="scrim" id="scrim" hidden></div>
+  <div class="content">
+    <div class="topbar">
+      <button class="btn" type="button" id="menuBtn" aria-expanded="false" aria-controls="side">Уроки</button>
+      <span class="spacer"></span>
+      <button class="brand" type="button" data-go="home"><span class="brand-name">Лунный код</span><span id="topMoon"></span></button>
+    </div>
+    <main class="main"><div id="alertSlot"></div><div id="main"></div></main>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.js"></script>
+<script>
+/* Движок: Lua 5.3 (fengari) + небольшая эмуляция Roblox */
+const LuaEngine = (function () {
+  const F = typeof fengari !== 'undefined' ? fengari : null;
+
+  const PRELUDE = String.raw`
+local rawtostring, mtype, floor = tostring, math.type, math.floor
+
+function tostring(v)
+  if mtype(v) == "float" and v == floor(v) and v > -1e15 and v < 1e15 then
+    return string.format("%d", v)
+  end
+  return rawtostring(v)
+end
+
+function print(...)
+  local n = select("#", ...)
+  local t = {}
+  for i = 1, n do t[i] = tostring((select(i, ...))) end
+  __emit(table.concat(t, "\t"), "log")
+end
+
+function warn(...)
+  local n = select("#", ...)
+  local t = {}
+  for i = 1, n do t[i] = tostring((select(i, ...))) end
+  __emit(table.concat(t, " "), "warn")
+end
+
+for _, k in ipairs({"execute", "exit", "remove", "rename", "getenv", "tmpname", "setlocale"}) do os[k] = nil end
+
+function typeof(v)
+  if type(v) == "table" then
+    local mt = getmetatable(v)
+    if mt and mt.__typeof then return mt.__typeof end
+  end
+  return type(v)
+end
+
+-- ===== расширения math / table / string, как в Luau
+function math.clamp(x, lo, hi)
+  if x < lo then return lo elseif x > hi then return hi end
+  return x
+end
+function math.round(x)
+  if x >= 0 then return floor(x + 0.5) end
+  return -floor(-x + 0.5)
+end
+function math.sign(x)
+  if x > 0 then return 1 elseif x < 0 then return -1 end
+  return 0
+end
+function table.find(t, v, init)
+  for i = init or 1, #t do if t[i] == v then return i end end
+  return nil
+end
+function table.clear(t) for k in pairs(t) do t[k] = nil end end
+function table.clone(t)
+  local c = {}
+  for k, v in pairs(t) do c[k] = v end
+  return setmetatable(c, getmetatable(t))
+end
+function table.create(n, v)
+  local t = {}
+  for i = 1, n do t[i] = v end
+  return t
+end
+function string.split(s, sep)
+  sep = sep or ","
+  local out = {}
+  if sep == "" then
+    for i = 1, #s do out[i] = s:sub(i, i) end
+    return out
+  end
+  local init = 1
+  while true do
+    local a, b = string.find(s, sep, init, true)
+    if not a then out[#out + 1] = string.sub(s, init) break end
+    out[#out + 1] = string.sub(s, init, a - 1)
+    init = b + 1
+  end
+  return out
+end
+
+-- ===== проверки для заданий
+function __expect(cond, msg)
+  if not cond then error("__TEST__" .. msg, 0) end
+end
+function __same(a, b)
+  if type(a) ~= type(b) then return false end
+  if type(a) ~= "table" then return a == b end
+  for k, v in pairs(a) do if not __same(v, b[k]) then return false end end
+  for k in pairs(b) do if a[k] == nil then return false end end
+  return true
+end
+function __show(v)
+  if type(v) == "table" then
+    local t = {}
+    for i, x in ipairs(v) do t[i] = __show(x) end
+    return "{" .. table.concat(t, ", ") .. "}"
+  end
+  if type(v) == "string" then return '"' .. v .. '"' end
+  return tostring(v)
+end
+
+-- ===== потоки и время (виртуальное: ждать по-настоящему не нужно)
+local lastHandlerError = nil
+local function resume(co, ...)
+  local ok, err = coroutine.resume(co, ...)
+  if not ok then
+    lastHandlerError = tostring(err)
+    __emit(tostring(err), "err")
+  end
+  return ok
+end
+function __noHandlerErrors()
+  if lastHandlerError then
+    error("__TEST__В обработчике события или в потоке произошла ошибка: " .. lastHandlerError, 0)
+  end
+end
+
+local now, seq, queue = 0, 0, {}
+local function schedule(co, t)
+  seq = seq + 1
+  queue[#queue + 1] = {t = t, co = co, seq = seq}
+end
+local function runDue(limit, keepTime)
+  while true do
+    local bi, best
+    for i, e in ipairs(queue) do
+      if e.t <= limit and (not best or e.t < best.t or (e.t == best.t and e.seq < best.seq)) then
+        bi, best = i, e
+      end
+    end
+    if not best then break end
+    table.remove(queue, bi)
+    if best.t > now then now = best.t end
+    resume(best.co)
+  end
+  if not keepTime and limit > now then now = limit end
+end
+function __drain(horizon) runDue(now + (horizon or 120), true) end
+
+task = {}
+function task.wait(t)
+  t = t or 0.03
+  local co, ismain = coroutine.running()
+  if ismain then
+    if now + t > 600 then
+      error("Тренажёр остановил программу: прошло больше 10 минут игрового времени. Нет ли бесконечного цикла?", 2)
+    end
+    runDue(now + t)
+  else
+    schedule(co, now + t)
+    coroutine.yield()
+  end
+  return t
+end
+function task.spawn(f, ...)
+  if type(f) ~= "function" then error("task.spawn ожидает функцию", 2) end
+  local co = coroutine.create(f)
+  resume(co, ...)
+  return co
+end
+function task.defer(f, ...)
+  local args = table.pack(...)
+  local co = coroutine.create(function() f(table.unpack(args, 1, args.n)) end)
+  schedule(co, now)
+  return co
+end
+function task.delay(t, f, ...)
+  local args = table.pack(...)
+  local co = coroutine.create(function() f(table.unpack(args, 1, args.n)) end)
+  schedule(co, now + (t or 0))
+  return co
+end
+wait = task.wait
+function time() return now end
+function tick() return now end
+
+-- ===== Vector3, Color3, Enum
+local V3 = {__typeof = "Vector3"}
+Vector3 = {}
+function Vector3.new(x, y, z) return setmetatable({X = x or 0, Y = y or 0, Z = z or 0}, V3) end
+Vector3.zero = Vector3.new(0, 0, 0)
+Vector3.one = Vector3.new(1, 1, 1)
+V3.__index = function(t, k)
+  if k == "Magnitude" then return math.sqrt(t.X * t.X + t.Y * t.Y + t.Z * t.Z) end
+  return nil
+end
+V3.__add = function(a, b) return Vector3.new(a.X + b.X, a.Y + b.Y, a.Z + b.Z) end
+V3.__sub = function(a, b) return Vector3.new(a.X - b.X, a.Y - b.Y, a.Z - b.Z) end
+V3.__mul = function(a, b)
+  if type(a) == "number" then return Vector3.new(b.X * a, b.Y * a, b.Z * a) end
+  if type(b) == "number" then return Vector3.new(a.X * b, a.Y * b, a.Z * b) end
+  return Vector3.new(a.X * b.X, a.Y * b.Y, a.Z * b.Z)
+end
+V3.__div = function(a, b)
+  if type(b) == "number" then return Vector3.new(a.X / b, a.Y / b, a.Z / b) end
+  return Vector3.new(a.X / b.X, a.Y / b.Y, a.Z / b.Z)
+end
+V3.__unm = function(a) return Vector3.new(-a.X, -a.Y, -a.Z) end
+V3.__eq = function(a, b) return a.X == b.X and a.Y == b.Y and a.Z == b.Z end
+V3.__tostring = function(v) return tostring(v.X) .. ", " .. tostring(v.Y) .. ", " .. tostring(v.Z) end
+
+local C3 = {__typeof = "Color3"}
+C3.__index = C3
+Color3 = {}
+function Color3.new(r, g, b) return setmetatable({R = r or 0, G = g or 0, B = b or 0}, C3) end
+function Color3.fromRGB(r, g, b) return Color3.new((r or 0) / 255, (g or 0) / 255, (b or 0) / 255) end
+C3.__eq = function(a, b) return a.R == b.R and a.G == b.G and a.B == b.B end
+C3.__tostring = function(c) return tostring(c.R) .. ", " .. tostring(c.G) .. ", " .. tostring(c.B) end
+
+local BC = {__typeof = "BrickColor"}
+BC.__index = BC
+BC.__tostring = function(b) return b.Name end
+BrickColor = {}
+function BrickColor.new(name) return setmetatable({Name = name}, BC) end
+
+Enum = setmetatable({}, {__index = function(t, k)
+  local sub = setmetatable({}, {__index = function(_, v) return "Enum." .. k .. "." .. v end})
+  rawset(t, k, sub)
+  return sub
+end})
+
+-- ===== События
+local Signal = {}
+Signal.__index = Signal
+function Signal.new() return setmetatable({handlers = {}}, Signal) end
+function Signal:Connect(fn)
+  if type(fn) ~= "function" then error("Connect ожидает функцию", 2) end
+  local sig = self
+  local conn = {Connected = true}
+  function conn:Disconnect()
+    self.Connected = false
+    for i, h in ipairs(sig.handlers) do
+      if h.conn == self then table.remove(sig.handlers, i) break end
+    end
+  end
+  table.insert(self.handlers, {fn = fn, conn = conn})
+  return conn
+end
+function Signal:Once(fn)
+  local conn
+  conn = self:Connect(function(...)
+    conn:Disconnect()
+    fn(...)
+  end)
+  return conn
+end
+function Signal:Fire(...)
+  local list = {}
+  for i, h in ipairs(self.handlers) do list[i] = h end
+  for _, h in ipairs(list) do
+    if h.conn.Connected then
+      resume(coroutine.create(h.fn), ...)
+    end
+  end
+end
+function Signal:Clear()
+  for _, h in ipairs(self.handlers) do h.conn.Connected = false end
+  self.handlers = {}
+end
+
+-- ===== Instance
+local D = setmetatable({}, {__mode = "k"})
+local IM = {__typeof = "Instance"}
+local generic = {}
+local CLASS = {}
+local classNames = {}
+
+local function sigset(...)
+  local t = {}
+  for _, n in ipairs({...}) do t[n] = true end
+  return t
+end
+local function defClass(name, def)
+  def.signals = def.signals or {}
+  def.nilprops = def.nilprops or {}
+  CLASS[name] = def
+  classNames[#classNames + 1] = name
+end
+
+local function signalFor(d, name)
+  local s = d.signals[name]
+  if not s then
+    s = Signal.new()
+    d.signals[name] = s
+  end
+  return s
+end
+
+local function invalid(d, k, level)
+  error(tostring(k) .. " is not a valid member of " .. d.props.ClassName .. " (в тренажёре поддерживаются не все свойства Roblox)", level)
+end
+
+IM.__index = function(self, k)
+  local d = D[self]
+  local v = d.props[k]
+  if v ~= nil then return v end
+  local gm = generic[k]
+  if gm then return gm end
+  local cm = d.def.methods and d.def.methods[k]
+  if cm then return cm end
+  if d.def.signals[k] or k == "ChildAdded" or k == "ChildRemoved" or k == "Destroying" then
+    return signalFor(d, k)
+  end
+  for _, c in ipairs(d.children) do
+    if D[c].props.Name == k then return c end
+  end
+  if k == "Parent" or d.def.nilprops[k] then return nil end
+  invalid(d, k, 3)
+end
+
+local function setParent(self, newParent)
+  local d = D[self]
+  if d.destroyed then
+    error("The Parent property of " .. tostring(d.props.Name) .. " is locked because it has been destroyed", 3)
+  end
+  if newParent ~= nil and not D[newParent] then
+    error("Parent должен быть объектом Instance или nil", 3)
+  end
+  local old = d.props.Parent
+  if old == newParent then return end
+  if newParent ~= nil then
+    local p = newParent
+    while p do
+      if p == self then error("Нельзя сделать объект потомком самого себя", 3) end
+      p = D[p].props.Parent
+    end
+  end
+  if old then
+    local oc = D[old].children
+    for i, c in ipairs(oc) do
+      if c == self then table.remove(oc, i) break end
+    end
+    local s = D[old].signals.ChildRemoved
+    if s then s:Fire(self) end
+  end
+  d.props.Parent = newParent
+  if newParent then
+    local nd = D[newParent]
+    table.insert(nd.children, self)
+    local s = nd.signals.ChildAdded
+    if s then s:Fire(self) end
+    if nd.props.ClassName == "Players" and d.props.ClassName == "Player" then
+      local pa = nd.signals.PlayerAdded
+      if pa then pa:Fire(self) end
+    end
+  end
+end
+
+IM.__newindex = function(self, k, v)
+  local d = D[self]
+  if k == "Parent" then
+    setParent(self, v)
+    return
+  end
+  if d.props[k] == nil and not d.def.nilprops[k] then invalid(d, k, 3) end
+  local old = d.props[k]
+  local hook = d.def.onset
+  if hook then v = hook(self, d, k, v) end
+  d.props[k] = v
+  if d.def.valueClass and k == "Value" and old ~= v then
+    local s = d.signals.Changed
+    if s then s:Fire(v) end
+  end
+end
+IM.__tostring = function(self) return tostring(D[self].props.Name) end
+
+generic.Destroy = function(self)
+  local d = D[self]
+  if d.destroyed then return end
+  local kids = {}
+  for i, c in ipairs(d.children) do kids[i] = c end
+  for _, c in ipairs(kids) do c:Destroy() end
+  local ds = d.signals.Destroying
+  if ds then ds:Fire() end
+  if d.props.Parent then setParent(self, nil) end
+  d.destroyed = true
+  for _, s in pairs(d.signals) do s:Clear() end
+end
+generic.ClearAllChildren = function(self)
+  local kids = {}
+  for i, c in ipairs(D[self].children) do kids[i] = c end
+  for _, c in ipairs(kids) do c:Destroy() end
+end
+generic.GetChildren = function(self)
+  local out = {}
+  for i, c in ipairs(D[self].children) do out[i] = c end
+  return out
+end
+generic.GetDescendants = function(self)
+  local out = {}
+  local function walk(inst)
+    for _, c in ipairs(D[inst].children) do
+      out[#out + 1] = c
+      walk(c)
+    end
+  end
+  walk(self)
+  return out
+end
+generic.FindFirstChild = function(self, name, recursive)
+  local d = D[self]
+  for _, c in ipairs(d.children) do
+    if D[c].props.Name == name then return c end
+  end
+  if recursive then
+    for _, c in ipairs(d.children) do
+      local r = c:FindFirstChild(name, true)
+      if r then return r end
+    end
+  end
+  return nil
+end
+generic.WaitForChild = function(self, name)
+  local c = self:FindFirstChild(name)
+  if not c then
+    error("WaitForChild: объект '" .. tostring(name) .. "' не найден. В Studio функция ждала бы его появления, тренажёр сразу сообщает об ошибке.", 2)
+  end
+  return c
+end
+generic.FindFirstChildOfClass = function(self, cls)
+  for _, c in ipairs(D[self].children) do
+    if D[c].props.ClassName == cls then return c end
+  end
+  return nil
+end
+generic.IsA = function(self, cls)
+  local d = D[self]
+  if cls == "Instance" or cls == d.props.ClassName then return true end
+  return (d.def.isA and d.def.isA[cls]) or false
+end
+generic.IsDescendantOf = function(self, ancestor)
+  local p = D[self].props.Parent
+  while p do
+    if p == ancestor then return true end
+    p = D[p].props.Parent
+  end
+  return false
+end
+generic.GetFullName = function(self)
+  local parts = {}
+  local cur = self
+  while cur do
+    local d = D[cur]
+    if d.props.ClassName == "DataModel" then break end
+    table.insert(parts, 1, tostring(d.props.Name))
+    cur = d.props.Parent
+  end
+  return table.concat(parts, ".")
+end
+generic.SetAttribute = function(self, k, v) D[self].attrs[k] = v end
+generic.GetAttribute = function(self, k) return D[self].attrs[k] end
+generic.Clone = function(self)
+  local d = D[self]
+  local c = Instance.new(d.props.ClassName)
+  for k, v in pairs(d.props) do
+    if k ~= "Parent" and k ~= "ClassName" and k ~= "Character" then c[k] = v end
+  end
+  for _, ch in ipairs(d.children) do
+    local cc = ch:Clone()
+    cc.Parent = c
+  end
+  return c
+end
+
+Instance = {}
+function Instance.new(className, parent)
+  local def = CLASS[className]
+  if not def then
+    error("Неизвестный класс '" .. tostring(className) .. "'. В тренажёре доступны: " .. table.concat(classNames, ", "), 2)
+  end
+  local props = def.props and def.props() or {}
+  props.ClassName = className
+  props.Name = className
+  local self = setmetatable({}, IM)
+  D[self] = {props = props, def = def, children = {}, signals = {}, attrs = {}, destroyed = false}
+  if parent then setParent(self, parent) end
+  return self
+end
+
+defClass("Part", {
+  props = function()
+    return {
+      Position = Vector3.new(0, 0, 0), Size = Vector3.new(4, 1, 2), Orientation = Vector3.new(0, 0, 0),
+      Anchored = false, CanCollide = true, Transparency = 0,
+      Color = Color3.new(0.64, 0.64, 0.64), BrickColor = BrickColor.new("Medium stone grey"),
+      Material = Enum.Material.Plastic,
+    }
+  end,
+  signals = sigset("Touched", "TouchEnded"),
+  isA = {BasePart = true, PVInstance = true},
+})
+defClass("Model", {nilprops = sigset("PrimaryPart"), isA = {PVInstance = true}})
+defClass("Folder", {})
+defClass("Humanoid", {
+  props = function() return {Health = 100, MaxHealth = 100, WalkSpeed = 16, JumpPower = 50} end,
+  signals = sigset("Died", "HealthChanged"),
+  methods = {TakeDamage = function(self, n) self.Health = self.Health - n end},
+  onset = function(self, d, k, v)
+    if k == "Health" then
+      if v > d.props.MaxHealth then v = d.props.MaxHealth end
+      if v < 0 then v = 0 end
+      local old = d.props.Health
+      d.props.Health = v
+      local hc = d.signals.HealthChanged
+      if hc and old ~= v then hc:Fire(v) end
+      if v <= 0 and old > 0 then
+        local died = d.signals.Died
+        if died then died:Fire() end
+      end
+    end
+    return v
+  end,
+})
+for name, default in pairs({IntValue = 0, NumberValue = 0, StringValue = "", BoolValue = false}) do
+  defClass(name, {
+    props = function() return {Value = default} end,
+    signals = sigset("Changed"),
+    valueClass = true,
+    isA = {ValueBase = true},
+  })
+end
+defClass("Player", {props = function() return {UserId = 1} end, nilprops = sigset("Character")})
+defClass("Players", {
+  signals = sigset("PlayerAdded", "PlayerRemoving"),
+  methods = {
+    GetPlayers = function(self)
+      local out = {}
+      for _, c in ipairs(self:GetChildren()) do
+        if c.ClassName == "Player" then out[#out + 1] = c end
+      end
+      return out
+    end,
+    GetPlayerFromCharacter = function(self, model)
+      for _, p in ipairs(self:GetPlayers()) do
+        if p.Character == model then return p end
+      end
+      return nil
+    end,
+  },
+})
+defClass("DataModel", {
+  methods = {
+    GetService = function(self, name)
+      local s = self:FindFirstChild(name)
+      if not s then error("'" .. tostring(name) .. "' is not a valid Service name", 2) end
+      return s
+    end,
+  },
+})
+for _, n in ipairs({"Workspace", "ReplicatedStorage", "ServerStorage", "ServerScriptService", "Lighting", "StarterGui", "Script"}) do
+  defClass(n, {})
+end
+
+game = Instance.new("DataModel")
+workspace = Instance.new("Workspace", game)
+local PlayersService = Instance.new("Players", game)
+for _, n in ipairs({"ReplicatedStorage", "ServerStorage", "ServerScriptService", "Lighting", "StarterGui"}) do
+  Instance.new(n, game)
+end
+script = Instance.new("Script", game.ServerScriptService)
+
+-- Только для тренажёра: «заходит» игрок с персонажем.
+function __addPlayer(name)
+  local p = Instance.new("Player")
+  p.Name = name
+  local ch = Instance.new("Model")
+  ch.Name = name
+  Instance.new("Humanoid", ch)
+  local root = Instance.new("Part")
+  root.Name = "HumanoidRootPart"
+  root.Parent = ch
+  ch.Parent = workspace
+  p.Character = ch
+  p.Parent = PlayersService
+  return p
+end
+`;
+
+  // Поддержка += -= *= /= //= %= ^= ..= из Luau (только как отдельная строка-инструкция)
+  function stripComment(s) {
+    let q = null;
+    for (let i = 0; i < s.length; i++) {
+      const c = s[i];
+      if (q) {
+        if (c === '\\') i++;
+        else if (c === q) q = null;
+      } else if (c === '"' || c === "'") q = c;
+      else if (c === '-' && s[i + 1] === '-') return s.slice(0, i);
+    }
+    return s;
+  }
+  const COMPOUND = /^(\s*)([A-Za-z_]\w*(?:(?:\.[A-Za-z_]\w*)|(?:\[[^\]\n]+\]))*)\s*(\+|-|\*|\/\/|\/|%|\^|\.\.)=\s*(.+)$/;
+  function preprocess(code) {
+    return code
+      .split('\n')
+      .map((line) => {
+        if (/^\s*--/.test(line)) return line;
+        const m = COMPOUND.exec(line);
+        if (!m) return line;
+        const rhs = stripComment(m[4]).trim();
+        if (!rhs) return line;
+        return `${m[1]}${m[2]} = ${m[2]} ${m[3]} (${rhs})`;
+      })
+      .join('\n');
+  }
+
+  const HINTS = [
+    [/attempt to call a nil value \((?:global|local|field|method) '([^']+)'\)/, (m) => `Вы вызываете «${m[1]}», но такой функции нет (значение nil). Проверьте название и регистр букв.`],
+    [/attempt to index a nil value \((?:global|local|field|upvalue) '([^']+)'\)/, (m) => `Переменная «${m[1]}» равна nil, поэтому обратиться к её полям нельзя.`],
+    [/attempt to perform arithmetic on a nil value(?: \((?:global|local|field|upvalue) '([^']+)'\))?/, (m) => `В вычислении участвует nil${m[1] ? ` (переменная «${m[1]}»)` : ''}. Ему не присвоили значение.`],
+    [/attempt to perform arithmetic on a string value/, () => 'Арифметика со строкой. Преобразуйте её через tonumber().'],
+    [/attempt to concatenate a nil value(?: \((?:global|local|field|upvalue) '([^']+)'\))?/, (m) => `Склеивать с «..» можно строки и числа, а здесь nil${m[1] ? ` (переменная «${m[1]}»)` : ''}.`],
+    [/attempt to compare (\w+) with (\w+)/, (m) => `Сравнивать можно значения одного типа, а здесь ${m[1]} и ${m[2]}.`],
+    [/'end' expected/, () => 'Не хватает end. Каждому if, for, while и function нужен свой end.'],
+    [/'then' expected/, () => 'После условия в if и elseif нужно слово then.'],
+    [/'do' expected/, () => 'После условия в while и после диапазона в for нужно слово do.'],
+    [/unexpected symbol near/, () => 'Lua не понимает этот символ. Проверьте кавычки, скобки и запятые рядом.'],
+  ];
+
+  function explain(msg) {
+    for (const [re, fn] of HINTS) {
+      const m = re.exec(msg);
+      if (m) return fn(m);
+    }
+    return null;
+  }
+
+  function parseError(raw, userLines) {
+    let msg = raw == null ? 'неизвестная ошибка' : raw;
+    if (msg.includes('Программа выполняется слишком долго')) {
+      return { line: null, msg: 'Программа выполняется слишком долго. Похоже, в коде бесконечный цикл.', hint: 'Проверьте, меняется ли в цикле while или repeat то, от чего зависит условие выхода.', test: false };
+    }
+    const m = /^main:(\d+): ([\s\S]*)$/.exec(msg);
+    let line = null;
+    let body = msg;
+    if (m) {
+      line = parseInt(m[1], 10);
+      body = m[2];
+    }
+    const inTest = line != null && line > userLines;
+    return { line: inTest ? null : line, msg: body, hint: explain(body), test: inTest };
+  }
+
+  function exec(L, src, name) {
+    const { lua, lauxlib, to_luastring, to_jsstring } = F;
+    const buf = to_luastring(src);
+    let st = lauxlib.luaL_loadbuffer(L, buf, buf.length, to_luastring(name));
+    if (st !== lua.LUA_OK) {
+      const p = lua.lua_tostring(L, -1);
+      const m = p ? to_jsstring(p) : 'ошибка загрузки';
+      lua.lua_pop(L, 1);
+      return { ok: false, phase: 'load', msg: m };
+    }
+    st = lua.lua_pcall(L, 0, 0, 0);
+    if (st !== lua.LUA_OK) {
+      const p = lua.lua_tostring(L, -1);
+      const m = p ? to_jsstring(p) : '(ошибка без текста)';
+      lua.lua_pop(L, 1);
+      return { ok: false, phase: 'run', msg: m };
+    }
+    return { ok: true };
+  }
+
+  function makeState(out, timeoutMs) {
+    const { lua, lauxlib, lualib, to_luastring, to_jsstring } = F;
+    const L = lauxlib.luaL_newstate();
+    lualib.luaL_openlibs(L);
+    for (const n of ['io', 'package', 'require', 'dofile', 'loadfile', 'debug']) {
+      lua.lua_pushnil(L);
+      lua.lua_setglobal(L, to_luastring(n));
+    }
+    lua.lua_pushcfunction(L, function (L) {
+      const kind = lua.lua_gettop(L) >= 2 ? to_jsstring(lua.lua_tostring(L, 2)) : 'log';
+      if (out.length >= 400) {
+        return lauxlib.luaL_error(L, to_luastring('Слишком много строк вывода. Программа остановлена.'));
+      }
+      const p = lua.lua_tostring(L, 1);
+      out.push({ k: kind, t: p ? to_jsstring(p) : '' });
+      return 0;
+    });
+    lua.lua_setglobal(L, to_luastring('__emit'));
+    const r = exec(L, PRELUDE, '=prelude');
+    if (!r.ok) throw new Error('prelude: ' + r.msg);
+    const deadline = (typeof performance !== 'undefined' ? performance.now() : Date.now()) + timeoutMs;
+    const nowFn = typeof performance !== 'undefined' ? () => performance.now() : () => Date.now();
+    lua.lua_sethook(
+      L,
+      function (L) {
+        if (nowFn() > deadline) {
+          lauxlib.luaL_error(L, to_luastring('Программа выполняется слишком долго'));
+        }
+      },
+      lua.LUA_MASKCOUNT,
+      20000
+    );
+    return L;
+  }
+
+  /**
+   * run(code, {test, expectOut, minOut})
+   * status: 'ok' (просто запуск) | 'pass' | 'fail' | 'error' | 'syntax'
+   */
+  function run(userCode, opts) {
+    opts = opts || {};
+    const out = [];
+    if (!F) {
+      return { status: 'error', out, error: { line: null, msg: 'Интерпретатор Lua не загрузился. Проверьте подключение к интернету и обновите страницу.', hint: null }, failMsg: null };
+    }
+    const pre = preprocess(userCode);
+    const userLines = pre.split('\n').length;
+    let L;
+    try {
+      L = makeState(out, opts.timeout || 2500);
+    } catch (e) {
+      return { status: 'error', out, error: { line: null, msg: String(e.message || e), hint: null }, failMsg: null };
+    }
+    const { lua, lauxlib, to_luastring } = F;
+    try {
+      // 1. Синтаксис пользовательского кода отдельно, чтобы ошибки указывали на его строки
+      const buf = to_luastring(pre);
+      const st = lauxlib.luaL_loadbuffer(L, buf, buf.length, to_luastring('=main'));
+      if (st !== lua.LUA_OK) {
+        const p = lua.lua_tostring(L, -1);
+        const raw = p ? F.to_jsstring(p) : 'синтаксическая ошибка';
+        return { status: 'syntax', out, error: parseError(raw, userLines), failMsg: null };
+      }
+      lua.lua_pop(L, 1);
+
+      const checking = opts.test != null;
+      const src = checking ? pre + '\n' + opts.test + '\n' : pre;
+      let r = exec(L, src, '=main');
+      if (r.ok && !checking) r = exec(L, '__drain()', '=prelude');
+      if (!r.ok) {
+        const m = /__TEST__([\s\S]*)$/.exec(r.msg);
+        if (m) return { status: 'fail', out, error: null, failMsg: m[1] };
+        const err = parseError(r.msg, userLines);
+        if (err.test) {
+          return {
+            status: 'fail',
+            out,
+            error: null,
+            failMsg: 'Проверка не смогла выполниться: ' + err.msg + '. Убедитесь, что функции и переменные называются так, как в задании.',
+          };
+        }
+        return { status: 'error', out, error: err, failMsg: null };
+      }
+      if (checking) {
+        const printed = out.filter((o) => o.k === 'log').map((o) => o.t);
+        if (opts.expectOut) {
+          const exp = opts.expectOut;
+          const same = printed.length === exp.length && printed.every((s, i) => s.trim() === exp[i]);
+          if (!same) {
+            return {
+              status: 'fail',
+              out,
+              error: null,
+              failMsg: 'Вывод не совпал с ожидаемым.\nОжидалось:\n' + exp.join('\n') + '\n\nПолучилось:\n' + (printed.join('\n') || '(ничего не выведено)'),
+            };
+          }
+        }
+        if (opts.minOut && printed.length < opts.minOut) {
+          return { status: 'fail', out, error: null, failMsg: `Нужно вывести хотя бы ${opts.minOut} строки через print, сейчас выведено ${printed.length}.` };
+        }
+        return { status: 'pass', out, error: null, failMsg: null };
+      }
+      return { status: 'ok', out, error: null, failMsg: null };
+    } catch (e) {
+      return { status: 'error', out, error: { line: null, msg: 'Внутренняя ошибка тренажёра: ' + (e && e.message ? e.message : e), hint: null }, failMsg: null };
+    }
+  }
+
+  return { run, preprocess, available: !!F };
+})();
+
+
+</script>
+<script>
+/* Содержание курса. Код пишется с отступами по 4 пробела, при загрузке они превращаются в табы. */
+const tabify = (s) => s.replace(/^(?: {4})+/gm, (m) => '\t'.repeat(m.length / 4));
+const dedent = (s) => {
+  const lines = s.split('\n');
+  const pad = Math.min(...lines.filter((x) => x.trim()).map((x) => /^ */.exec(x)[0].length));
+  return lines.map((x) => x.slice(Math.min(pad, /^ */.exec(x)[0].length))).join('\n');
+};
+const L = (strings, ...vals) =>
+  tabify(dedent(String.raw({ raw: strings.raw }, ...vals).replace(/^\n/, '').replace(/\s+$/, ''))) + '\n';
+
+const MODULES = [
+  { id: 'basics', title: 'Основы Lua' },
+  { id: 'data', title: 'Данные' },
+  { id: 'craft', title: 'Приёмы Lua' },
+  { id: 'roblox', title: 'Roblox Studio' },
+];
+
+const LESSONS = [
+  /* ───────────── 1 ───────────── */
+  {
+    id: 'hello',
+    module: 'basics',
+    title: 'Привет, Output',
+    min: 8,
+    lead: 'Первая программа на Lua состоит из одной строки. Начнём с неё и заодно посмотрим, как Lua сообщает об ошибках.',
+    blocks: [
+      { p: 'Программа — это список команд. Компьютер выполняет их сверху вниз, по одной строке. Самая полезная команда в начале пути — <code>print</code>. Она выводит значение в окно Output (в Roblox Studio это панель с журналом).' },
+      { code: L`print("Hello, Roblox!")`, run: true },
+      { p: 'Текст в кавычках называется <b>строкой</b>. Выводить можно сразу несколько значений: напишите их через запятую, и в Output они разделятся табуляцией.' },
+      { code: L`print("Игрок", "Alex", 100)`, run: true },
+      { h: 'Комментарии' },
+      { p: 'Всё, что стоит после <code>--</code> до конца строки, Lua пропускает. Комментарии нужны людям, а не компьютеру: они объясняют, зачем написан код.' },
+      { code: L`
+        -- Это комментарий
+        print("Эта строка выполнится") -- и это тоже комментарий
+
+        --[[ Комментарий
+             на несколько строк ]]
+      `, run: true },
+      { h: 'Ошибки случаются у всех' },
+      { p: 'Опечатка ничего не ломает, кроме запуска: Lua покажет номер строки и причину. Запустите код ниже и прочитайте сообщение. В нём не закрыта скобка в первой строке.' },
+      { code: L`
+        print("Скоро всё получится"
+        print("Эта строка не выполнится")
+      `, run: true },
+      { note: 'Читайте сообщение целиком. В нём почти всегда есть номер строки и подсказка о том, что Lua ожидал увидеть.' },
+    ],
+    task: {
+      prompt: 'Выведите две строки: <code>Hello, Roblox!</code> и <code>Я учу Lua</code>.',
+      starter: L`-- напишите код здесь`,
+      expectOut: ['Hello, Roblox!', 'Я учу Lua'],
+      test: '',
+      hint: 'Нужны две команды print, по одной на каждую строку. Текст берётся в двойные кавычки.',
+      solution: L`
+        print("Hello, Roblox!")
+        print("Я учу Lua")
+      `,
+    },
+  },
+
+  /* ───────────── 2 ───────────── */
+  {
+    id: 'vars',
+    module: 'basics',
+    title: 'Переменные и типы',
+    min: 10,
+    lead: 'Переменная — это имя, под которым хранится значение. Здоровье игрока, его ник, признак «жив ли он» — всё это переменные.',
+    blocks: [
+      { p: 'Переменную создаёт слово <code>local</code>, затем имя, знак <code>=</code> и значение. Знак «равно» здесь означает «положить значение в переменную», а не «сравнить».' },
+      { code: L`
+        local playerName = "Alex"
+        local health = 100
+        local isAlive = true
+
+        print(playerName, health, isAlive)
+      `, run: true },
+      { h: 'Основные типы' },
+      { table: { head: ['Тип', 'Что это', 'Пример'], rows: [
+        ['<code>number</code>', 'число, целое или дробное', '<code>42</code>, <code>3.14</code>'],
+        ['<code>string</code>', 'текст', '<code>"Alex"</code>'],
+        ['<code>boolean</code>', 'логическое значение', '<code>true</code>, <code>false</code>'],
+        ['<code>nil</code>', 'ничего, значения нет', '<code>nil</code>'],
+      ] } },
+      { p: 'Узнать тип значения можно функцией <code>type</code>.' },
+      { code: L`
+        print(type("Alex"), type(100), type(true), type(nil))
+      `, run: true },
+      { h: 'Менять значения можно' },
+      { code: L`
+        local coins = 10
+        coins = coins + 5   -- без local: меняем уже существующую переменную
+        print(coins)
+      `, run: true },
+      { note: 'Всегда пишите <code>local</code> при создании переменной. Без него переменная становится глобальной, доступной из любого места кода. Это источник трудных ошибок. Регистр важен: <code>Health</code> и <code>health</code> — разные имена. Имя не может начинаться с цифры и содержать пробелы. В Roblox принято писать <code>camelCase</code>.' },
+    ],
+    task: {
+      prompt: 'Создайте три переменные: <code>playerName</code> — любая непустая строка, <code>level</code> — число не меньше 1, <code>isAlive</code> — <code>true</code>. Затем выведите каждую из них командой <code>print</code>.',
+      starter: L`
+        -- 1. playerName — строка
+        -- 2. level — число
+        -- 3. isAlive — логическое значение true
+        -- затем выведите все три через print
+      `,
+      minOut: 3,
+      test: L`
+        local expect = __expect
+        expect(type(playerName) == "string" and #playerName > 0, "playerName должна быть непустой строкой")
+        expect(type(level) == "number" and level >= 1, "level должна быть числом не меньше 1")
+        expect(isAlive == true, "isAlive должна быть равна true")
+      `,
+      hint: 'Строка берётся в кавычки, число пишется без них. Не забудьте слово local перед каждым именем.',
+      solution: L`
+        local playerName = "Alex"
+        local level = 5
+        local isAlive = true
+
+        print(playerName)
+        print(level)
+        print(isAlive)
+      `,
+    },
+  },
+
+  /* ───────────── 3 ───────────── */
+  {
+    id: 'math',
+    module: 'basics',
+    title: 'Числа и строки',
+    min: 12,
+    lead: 'Игры полны арифметики: урон, скорость, опыт. Заодно научимся склеивать текст и выводить красивые сообщения.',
+    blocks: [
+      { table: { head: ['Операция', 'Знак', 'Пример', 'Результат'], rows: [
+        ['сложение', '<code>+</code>', '<code>7 + 3</code>', '10'],
+        ['вычитание', '<code>-</code>', '<code>7 - 3</code>', '4'],
+        ['умножение', '<code>*</code>', '<code>7 * 3</code>', '21'],
+        ['деление', '<code>/</code>', '<code>7 / 2</code>', '3.5'],
+        ['целочисленное деление', '<code>//</code>', '<code>7 // 2</code>', '3'],
+        ['остаток от деления', '<code>%</code>', '<code>7 % 3</code>', '1'],
+        ['степень', '<code>^</code>', '<code>2 ^ 10</code>', '1024'],
+      ] } },
+      { code: L`
+        print(7 + 3, 7 - 3, 7 * 3, 7 / 2, 7 // 2, 7 % 3, 2 ^ 10)
+        print((2 + 3) * 4)  -- скобки меняют порядок действий
+      `, run: true },
+      { note: 'Остаток <code>%</code> пригодится постоянно. Например, <code>n % 2 == 0</code> проверяет, чётное ли число. Тренажёр работает на Lua 5.3, а Roblox — на Luau. Если склеить результат деления через <code>..</code>, здесь может получиться <code>5.0</code>, а в Roblox будет <code>5</code>.' },
+      { h: 'Работа со строками' },
+      { p: 'Строки склеивают двумя точками <code>..</code>. Длину строки возвращает <code>#</code>. Для сообщений с подстановкой удобна <code>string.format</code>: <code>%s</code> — текст, <code>%d</code> — целое число, <code>%.1f</code> — дробное с одним знаком.' },
+      { code: L`
+        local name = "Alex"
+        print("Привет, " .. name .. "!")
+        print(#"Roblox")
+        print(string.format("%s набрал %d очков (%.1f%%)", name, 120, 45.678))
+      `, run: true },
+      { p: 'Между числами и строками можно переходить в обе стороны.' },
+      { code: L`
+        print(tonumber("42") + 8)
+        print(tostring(99) .. " монет")
+        print(tonumber("abc"))  -- не число, получится nil
+      `, run: true },
+    ],
+    task: {
+      prompt: 'Игрок с 100 HP получает два удара по 35 урона. Посчитайте остаток здоровья в переменной <code>remaining</code> и выведите строку <code>Осталось HP: 30</code>.',
+      starter: L`
+        local hp = 100
+        local damage = 35
+        local hits = 2
+
+        -- посчитайте remaining и выведите сообщение
+      `,
+      expectOut: ['Осталось HP: 30'],
+      test: L`
+        __expect(remaining == 30, "Переменная remaining должна быть равна 30")
+      `,
+      hint: 'remaining = hp - damage * hits. Для вывода склейте текст и число: "Осталось HP: " .. remaining.',
+      solution: L`
+        local hp = 100
+        local damage = 35
+        local hits = 2
+
+        local remaining = hp - damage * hits
+        print("Осталось HP: " .. remaining)
+      `,
+    },
+  },
+
+  /* ───────────── 4 ───────────── */
+  {
+    id: 'functions',
+    module: 'basics',
+    title: 'Функции',
+    min: 12,
+    lead: 'Функция — это именованный кусок кода, который можно вызывать снова и снова. Почти всё в Roblox держится на функциях.',
+    blocks: [
+      { p: 'Функция принимает <b>параметры</b>, что-то считает и отдаёт результат через <code>return</code>. Определяют её словами <code>local function</code>.' },
+      { code: L`
+        local function add(a, b)
+            return a + b
+        end
+
+        print(add(2, 3))
+        print(add(10, 5))
+      `, run: true },
+      { p: 'Функция может вернуть несколько значений сразу. Если <code>return</code> нет, она вернёт <code>nil</code>.' },
+      { code: L`
+        local function minMax(a, b)
+            return math.min(a, b), math.max(a, b)
+        end
+
+        local small, big = minMax(8, 3)
+        print(small, big)
+      `, run: true },
+      { h: 'Значения по умолчанию' },
+      { p: 'Если аргумент не передали, параметр будет <code>nil</code>. Оператор <code>or</code> позволяет подставить запасное значение.' },
+      { code: L`
+        local function greet(name)
+            name = name or "игрок"
+            return "Привет, " .. name
+        end
+
+        print(greet("Alex"))
+        print(greet())
+      `, run: true },
+      { h: 'Полезные функции math' },
+      { list: [
+        '<code>math.min(a, b)</code> и <code>math.max(a, b)</code> возвращают меньшее и большее число',
+        '<code>math.floor(x)</code> и <code>math.ceil(x)</code> округляют вниз и вверх',
+        '<code>math.abs(x)</code> возвращает модуль, <code>math.sqrt(x)</code> — квадратный корень',
+        '<code>math.random(a, b)</code> возвращает случайное целое от a до b',
+      ] },
+      { note: 'Переменные, созданные внутри функции через <code>local</code>, существуют только в ней. Это называется областью видимости. Снаружи их не видно.' },
+    ],
+    task: {
+      prompt: 'Напишите функцию <code>heal(hp, amount, maxHp)</code>. Она возвращает здоровье после лечения, но не больше <code>maxHp</code>. Например, <code>heal(90, 20, 100)</code> вернёт <code>100</code>.',
+      starter: L`
+        local function heal(hp, amount, maxHp)
+            -- ваш код
+        end
+      `,
+      test: L`
+        local expect = __expect
+        expect(type(heal) == "function", "Функция heal не найдена")
+        expect(heal(50, 20, 100) == 70, "heal(50, 20, 100) должна вернуть 70, а вернула " .. __show(heal(50, 20, 100)))
+        expect(heal(90, 20, 100) == 100, "heal(90, 20, 100) должна вернуть 100, а вернула " .. __show(heal(90, 20, 100)))
+        expect(heal(100, 5, 100) == 100, "heal(100, 5, 100) должна вернуть 100")
+      `,
+      hint: 'Здоровье после лечения — это hp + amount. Чтобы не превысить максимум, возьмите меньшее из двух чисел через math.min.',
+      solution: L`
+        local function heal(hp, amount, maxHp)
+            return math.min(hp + amount, maxHp)
+        end
+      `,
+    },
+  },
+
+  /* ───────────── 5 ───────────── */
+  {
+    id: 'conditions',
+    module: 'basics',
+    title: 'Условия',
+    min: 12,
+    lead: 'Условия позволяют программе принимать решения: пустить игрока в дверь, засчитать победу, показать предупреждение.',
+    blocks: [
+      { code: L`
+        local health = 35
+
+        if health <= 0 then
+            print("Игрок погиб")
+        elseif health < 40 then
+            print("Мало здоровья!")
+        else
+            print("Всё в порядке")
+        end
+      `, run: true },
+      { p: 'Условие — это выражение, результатом которого будет <code>true</code> или <code>false</code>. Операторы сравнения:' },
+      { table: { head: ['Знак', 'Значение'], rows: [
+        ['<code>==</code>', 'равно'],
+        ['<code>~=</code>', 'не равно (не <code>!=</code>, как в других языках)'],
+        ['<code>&lt;</code>, <code>&gt;</code>', 'меньше, больше'],
+        ['<code>&lt;=</code>, <code>&gt;=</code>', 'меньше или равно, больше или равно'],
+      ] } },
+      { h: 'and, or, not' },
+      { p: 'Условия можно комбинировать: <code>and</code> — «и», <code>or</code> — «или», <code>not</code> — «не».' },
+      { code: L`
+        local level = 12
+        local hasKey = true
+
+        if level >= 10 and hasKey then
+            print("Дверь открыта")
+        end
+
+        local isSprinting = true
+        local speed = isSprinting and 24 or 16
+        print(speed)
+      `, run: true },
+      { note: 'Ложными в Lua считаются только <code>false</code> и <code>nil</code>. Всё остальное, включая <code>0</code> и пустую строку, считается истиной. Строка <code>local x = cond and a or b</code> — привычный способ выбрать одно из двух значений.' },
+      { code: L`
+        print(0 and "ноль тоже правда" or "нет")
+        print(nil and 1 or 2)
+        print(not nil)
+      `, run: true },
+    ],
+    task: {
+      prompt: 'Напишите функцию <code>getRank(score)</code>. Она возвращает <code>"S"</code> при счёте 90 и выше, <code>"A"</code> при 75 и выше, <code>"B"</code> при 50 и выше, иначе <code>"C"</code>.',
+      starter: L`
+        local function getRank(score)
+            -- ваш код
+        end
+      `,
+      test: L`
+        local expect = __expect
+        expect(type(getRank) == "function", "Функция getRank не найдена")
+        local cases = {{100, "S"}, {90, "S"}, {89, "A"}, {75, "A"}, {74, "B"}, {50, "B"}, {49, "C"}, {0, "C"}}
+        for _, c in ipairs(cases) do
+            local got = getRank(c[1])
+            expect(got == c[2], "getRank(" .. c[1] .. ") должна вернуть " .. c[2] .. ", а вернула " .. __show(got))
+        end
+      `,
+      hint: 'Проверяйте от большего порога к меньшему: сначала score >= 90, потом elseif score >= 75 и так далее. Последним идёт else.',
+      solution: L`
+        local function getRank(score)
+            if score >= 90 then
+                return "S"
+            elseif score >= 75 then
+                return "A"
+            elseif score >= 50 then
+                return "B"
+            else
+                return "C"
+            end
+        end
+      `,
+    },
+  },
+
+  /* ───────────── 6 ───────────── */
+  {
+    id: 'loops',
+    module: 'basics',
+    title: 'Циклы',
+    min: 12,
+    lead: 'Цикл повторяет код. Расставить сотню платформ, отсчитать секунды до взрыва, пройтись по всем игрокам — всё это циклы.',
+    blocks: [
+      { h: 'for: повтор по счётчику' },
+      { code: L`
+        for i = 1, 5 do
+            print("Шаг", i)
+        end
+      `, run: true },
+      { p: 'Третье число — шаг. Им можно считать в обратную сторону или через одно число.' },
+      { code: L`
+        for i = 10, 1, -3 do
+            print(i)  -- 10, 7, 4, 1
+        end
+
+        local total = 0
+        for i = 1, 5 do
+            total = total + i
+        end
+        print("Сумма:", total)
+      `, run: true },
+      { h: 'while и repeat' },
+      { p: '<code>while</code> проверяет условие перед каждым повтором. <code>repeat ... until</code> проверяет после, поэтому выполнится хотя бы раз. Выйти из цикла досрочно можно через <code>break</code>.' },
+      { code: L`
+        local hp = 100
+        local turns = 0
+        while hp > 0 do
+            hp = hp - 30
+            turns = turns + 1
+        end
+        print("Ходов до смерти:", turns)
+
+        local n = 0
+        repeat
+            n = n + 1
+        until n >= 3
+        print(n)
+      `, run: true },
+      { note: 'Цикл <code>while true do ... end</code> без <code>break</code> бесконечен. В Roblox такие циклы используют специально, добавляя внутрь <code>task.wait()</code>. Мы встретимся с этим в уроке про время. Тренажёр остановит программу, если она работает слишком долго.' },
+    ],
+    task: {
+      prompt: 'Напишите функцию <code>sumOfMultiples(limit)</code>. Она возвращает сумму всех чисел от 1 до <code>limit</code>, которые делятся на 3 или на 5. Для 10 это 3 + 5 + 6 + 9 + 10 = 33.',
+      starter: L`
+        local function sumOfMultiples(limit)
+            -- ваш код
+        end
+      `,
+      test: L`
+        local expect = __expect
+        expect(type(sumOfMultiples) == "function", "Функция sumOfMultiples не найдена")
+        expect(sumOfMultiples(10) == 33, "sumOfMultiples(10) должна вернуть 33, а вернула " .. __show(sumOfMultiples(10)))
+        expect(sumOfMultiples(1) == 0, "sumOfMultiples(1) должна вернуть 0")
+        expect(sumOfMultiples(100) == 2418, "sumOfMultiples(100) должна вернуть 2418, а вернула " .. __show(sumOfMultiples(100)))
+      `,
+      hint: 'Заведите переменную total = 0, пройдите циклом for i = 1, limit и прибавляйте i, если i % 3 == 0 or i % 5 == 0.',
+      solution: L`
+        local function sumOfMultiples(limit)
+            local total = 0
+            for i = 1, limit do
+                if i % 3 == 0 or i % 5 == 0 then
+                    total = total + i
+                end
+            end
+            return total
+        end
+      `,
+    },
+  },
+
+  /* ───────────── 7 ───────────── */
+  {
+    id: 'arrays',
+    module: 'data',
+    title: 'Массивы',
+    min: 14,
+    lead: 'Таблица — единственная структура данных в Lua, зато очень гибкая. Начнём с её самого простого вида: списка значений.',
+    blocks: [
+      { p: 'Список создают фигурными скобками. Элементы нумеруются <b>с единицы</b>, а не с нуля. Это отличие Lua от большинства языков.' },
+      { code: L`
+        local items = {"меч", "щит", "зелье"}
+        print(items[1])   -- первый элемент
+        print(#items)     -- количество элементов
+
+        table.insert(items, "лук")       -- добавить в конец
+        table.insert(items, 1, "кинжал") -- вставить на позицию 1
+        print(table.concat(items, ", "))
+
+        table.remove(items, 2)           -- убрать элемент с позиции 2
+        print(table.concat(items, ", "))
+      `, run: true },
+      { h: 'Обход списка' },
+      { p: '<code>ipairs</code> проходит по элементам по порядку и отдаёт номер и значение.' },
+      { code: L`
+        local scores = {10, 25, 7}
+        local sum = 0
+        for index, value in ipairs(scores) do
+            print(index, value)
+            sum = sum + value
+        end
+        print("Сумма:", sum)
+      `, run: true },
+      { h: 'Сортировка' },
+      { code: L`
+        local nums = {5, 2, 9, 1}
+        table.sort(nums)
+        print(table.concat(nums, " "))
+
+        table.sort(nums, function(a, b) return a > b end)  -- по убыванию
+        print(table.concat(nums, " "))
+      `, run: true },
+      { note: 'Не оставляйте «дыр» в списке (<code>nil</code> в середине): оператор <code>#</code> на таких таблицах работает непредсказуемо.' },
+    ],
+    task: {
+      prompt: 'Напишите функцию <code>onlyAbove(list, min)</code>. Она возвращает <b>новый</b> список из тех элементов <code>list</code>, которые не меньше <code>min</code>, в прежнем порядке. Например, <code>onlyAbove({1, 5, 3, 8}, 4)</code> вернёт <code>{5, 8}</code>.',
+      starter: L`
+        local function onlyAbove(list, min)
+            -- ваш код
+        end
+      `,
+      test: L`
+        local expect = __expect
+        expect(type(onlyAbove) == "function", "Функция onlyAbove не найдена")
+        local r = onlyAbove({1, 5, 3, 8}, 4)
+        expect(__same(r, {5, 8}), "onlyAbove({1, 5, 3, 8}, 4) должна вернуть {5, 8}, а вернула " .. __show(r))
+        r = onlyAbove({}, 4)
+        expect(__same(r, {}), "Для пустого списка нужно вернуть пустой список")
+        r = onlyAbove({4, 4, 3}, 4)
+        expect(__same(r, {4, 4}), "Элементы, равные min, тоже подходят: ожидалось {4, 4}, получено " .. __show(r))
+        local src = {9, 1}
+        onlyAbove(src, 5)
+        expect(__same(src, {9, 1}), "Исходный список менять нельзя")
+      `,
+      hint: 'Создайте пустой результат local result = {}, обойдите list через ipairs и добавляйте подходящие значения через table.insert(result, value).',
+      solution: L`
+        local function onlyAbove(list, min)
+            local result = {}
+            for _, value in ipairs(list) do
+                if value >= min then
+                    table.insert(result, value)
+                end
+            end
+            return result
+        end
+      `,
+    },
+  },
+
+  /* ───────────── 8 ───────────── */
+  {
+    id: 'dicts',
+    module: 'data',
+    title: 'Словари',
+    min: 14,
+    lead: 'Та же таблица умеет хранить пары «ключ — значение». Так описывают игроков, предметы и настройки.',
+    blocks: [
+      { code: L`
+        local player = {
+            name = "Alex",
+            level = 7,
+            inventory = {"меч", "щит"},
+        }
+
+        print(player.name, player["level"])
+        player.level = player.level + 1  -- изменить
+        player.gold = 250                -- добавить новый ключ
+        print(player.level, player.gold)
+        print(#player.inventory)         -- вложенная таблица
+      `, run: true },
+      { p: 'Чтобы удалить ключ, присвойте ему <code>nil</code>. Чтобы проверить, есть ли ключ, достаточно обратиться к нему в условии.' },
+      { code: L`
+        local stats = {hp = 100, mana = 50, speed = 16}
+        stats.mana = nil
+
+        if stats.mana then
+            print("мана есть")
+        else
+            print("маны нет")
+        end
+      `, run: true },
+      { h: 'Обход словаря' },
+      { p: '<code>pairs</code> проходит по всем ключам. Порядок при этом <b>не гарантирован</b>. Не рассчитывайте, что ключи придут в том порядке, в котором вы их записали.' },
+      { code: L`
+        local stats = {hp = 100, mana = 50, speed = 16}
+        local sum = 0
+        for name, value in pairs(stats) do
+            sum = sum + value
+        end
+        print(sum)
+      `, run: true },
+      { note: 'Оператор <code>#</code> считает только элементы списка с номерами 1, 2, 3 и так далее. У словаря с текстовыми ключами он вернёт 0. Чтобы посчитать ключи, пройдите по ним через <code>pairs</code>.' },
+    ],
+    task: {
+      prompt: 'Напишите функцию <code>totalValue(items, prices)</code>. <code>items</code> — словарь «предмет → количество», <code>prices</code> — словарь «предмет → цена за штуку». Функция возвращает общую стоимость. Предметы без цены считаются бесплатными.',
+      starter: L`
+        local function totalValue(items, prices)
+            -- ваш код
+        end
+      `,
+      test: L`
+        local expect = __expect
+        expect(type(totalValue) == "function", "Функция totalValue не найдена")
+        local v = totalValue({sword = 2, potion = 5}, {sword = 100, potion = 10})
+        expect(v == 250, "Ожидалось 250, получено " .. __show(v))
+        v = totalValue({sword = 1, junk = 7}, {sword = 100})
+        expect(v == 100, "Предмет без цены должен считаться бесплатным: ожидалось 100, получено " .. __show(v))
+        expect(totalValue({}, {sword = 100}) == 0, "Для пустого набора предметов нужно вернуть 0")
+      `,
+      hint: 'Пройдите по items через pairs: name — предмет, count — количество. Цена лежит в prices[name]. Если её нет, подойдёт запасное значение через or 0.',
+      solution: L`
+        local function totalValue(items, prices)
+            local total = 0
+            for name, count in pairs(items) do
+                total = total + count * (prices[name] or 0)
+            end
+            return total
+        end
+      `,
+    },
+  },
+
+  /* ───────────── 9 ───────────── */
+  {
+    id: 'strings',
+    module: 'data',
+    title: 'Строки подробнее',
+    min: 12,
+    lead: 'Чат-команды, имена, подписи на табло: со строками работают в любой игре. В Lua для этого есть набор готовых функций.',
+    blocks: [
+      { p: 'Функции строк можно вызывать как методы: <code>msg:upper()</code> то же самое, что <code>string.upper(msg)</code>.' },
+      { code: L`
+        local msg = "Roblox Studio"
+        print(msg:upper(), msg:lower(), #msg)
+        print(msg:sub(1, 6))       -- символы с 1-го по 6-й
+        print(msg:find("Studio"))  -- где начинается и где заканчивается
+        print(msg:gsub("o", "0"))  -- замена, вторым значением идёт число замен
+        print(("ха"):rep(3))       -- повторить
+      `, run: true },
+      { h: 'Шаблоны и gmatch' },
+      { p: 'Шаблон описывает, какие символы искать. <code>%d</code> — цифра, <code>%a</code> — буква, <code>%s</code> — пробельный символ, <code>%S</code> — всё, кроме пробельных, <code>+</code> — «один или больше». В квадратных скобках перечисляют набор: <code>[^,]</code> — любой символ, кроме запятой. Функция <code>gmatch</code> перебирает все совпадения.' },
+      { code: L`
+        local command = "/give Alex 50"
+        for word in command:gmatch("%S+") do
+            print(word)
+        end
+
+        print(("Счёт: 120 очков"):match("%d+"))  -- первое число в тексте
+      `, run: true },
+      { note: 'Функции строк считают байты, а не буквы. Для латиницы это одно и то же, а русская буква занимает два байта: <code>#"привет"</code> даёт 12. Для таких случаев в Lua есть библиотека <code>utf8</code>.' },
+    ],
+    task: {
+      prompt: 'Напишите функцию <code>splitCSV(text)</code>. Она разбивает строку по запятым и возвращает список. <code>splitCSV("sword,shield,potion")</code> вернёт <code>{"sword", "shield", "potion"}</code>, а для пустой строки вернёт пустой список.',
+      starter: L`
+        local function splitCSV(text)
+            -- ваш код
+        end
+      `,
+      test: L`
+        local expect = __expect
+        expect(type(splitCSV) == "function", "Функция splitCSV не найдена")
+        local r = splitCSV("sword,shield,potion")
+        expect(__same(r, {"sword", "shield", "potion"}), "Ожидалось {sword, shield, potion}, получено " .. __show(r))
+        r = splitCSV("one")
+        expect(__same(r, {"one"}), "Для одного слова нужно вернуть список из одного элемента")
+        r = splitCSV("")
+        expect(__same(r, {}), "Для пустой строки нужно вернуть пустой список")
+      `,
+      hint: 'Шаблон "[^,]+" находит кусок текста без запятых. Переберите куски через for part in text:gmatch("[^,]+") и добавляйте в результат через table.insert.',
+      solution: L`
+        local function splitCSV(text)
+            local result = {}
+            for part in text:gmatch("[^,]+") do
+                table.insert(result, part)
+            end
+            return result
+        end
+      `,
+    },
+  },
+
+  /* ───────────── 10 ───────────── */
+  {
+    id: 'closures',
+    module: 'craft',
+    title: 'Функции как значения',
+    min: 12,
+    lead: 'В Lua функцию можно положить в переменную, передать в другую функцию и вернуть из неё. На этом построены события Roblox.',
+    blocks: [
+      { code: L`
+        local function applyTwice(f, x)
+            return f(f(x))
+        end
+
+        local function double(n)
+            return n * 2
+        end
+
+        print(applyTwice(double, 5))
+        print(applyTwice(function(n) return n + 10 end, 1))  -- анонимная функция
+      `, run: true },
+      { p: 'Функция без имени, написанная прямо в аргументе, называется <b>анонимной</b>. Именно так вы будете подключать обработчики: <code>part.Touched:Connect(function() ... end)</code>.' },
+      { h: 'Замыкания' },
+      { p: 'Функция «помнит» локальные переменные из места, где была создана. Такое сочетание называют замыканием.' },
+      { code: L`
+        local function makeGreeter(greeting)
+            return function(name)
+                return greeting .. ", " .. name .. "!"
+            end
+        end
+
+        local hello = makeGreeter("Привет")
+        local bye = makeGreeter("Пока")
+        print(hello("Alex"))
+        print(bye("Alex"))
+      `, run: true },
+      { h: 'Переменное число аргументов' },
+      { code: L`
+        local function sum(...)
+            local total = 0
+            for _, v in ipairs({...}) do
+                total = total + v
+            end
+            return total
+        end
+
+        print(sum(1, 2, 3, 4))
+      `, run: true },
+    ],
+    task: {
+      prompt: 'Напишите функцию <code>makeCounter()</code>. Она возвращает функцию-счётчик: первый вызов даёт <code>1</code>, второй <code>2</code> и так далее. У каждого счётчика свой отдельный счёт.',
+      starter: L`
+        local function makeCounter()
+            -- ваш код
+        end
+      `,
+      test: L`
+        local expect = __expect
+        expect(type(makeCounter) == "function", "Функция makeCounter не найдена")
+        local c1 = makeCounter()
+        expect(type(c1) == "function", "makeCounter должна вернуть функцию")
+        expect(c1() == 1, "Первый вызов счётчика должен вернуть 1")
+        expect(c1() == 2, "Второй вызов счётчика должен вернуть 2")
+        local c2 = makeCounter()
+        expect(c2() == 1, "У нового счётчика свой счёт: первый вызов должен вернуть 1")
+        expect(c1() == 3, "Третий вызов первого счётчика должен вернуть 3")
+      `,
+      hint: 'Создайте внутри makeCounter переменную count = 0 и верните функцию, которая увеличивает count на 1 и возвращает его.',
+      solution: L`
+        local function makeCounter()
+            local count = 0
+            return function()
+                count = count + 1
+                return count
+            end
+        end
+      `,
+    },
+  },
+
+  /* ───────────── 11 ───────────── */
+  {
+    id: 'classes',
+    module: 'craft',
+    title: 'Метатаблицы и классы',
+    min: 15,
+    lead: 'Когда в игре десятки врагов с одинаковым поведением, пригодятся классы. В Lua их собирают из таблиц и одной хитрости: метатаблиц.',
+    blocks: [
+      { p: 'Идея такая. Таблица <code>Enemy</code> хранит общие методы. Каждый враг — отдельная таблица со своими данными, у которой в метатаблице указано: «если не нашёл поле у себя, поищи в Enemy». Это делает ключ <code>__index</code>.' },
+      { code: L`
+        local Enemy = {}
+        Enemy.__index = Enemy
+
+        function Enemy.new(name, hp)
+            local self = setmetatable({}, Enemy)
+            self.name = name
+            self.hp = hp
+            return self
+        end
+
+        function Enemy:Describe()
+            return self.name .. " (" .. self.hp .. " HP)"
+        end
+
+        local orc = Enemy.new("Орк", 120)
+        local bat = Enemy.new("Летучая мышь", 15)
+        print(orc:Describe())
+        print(bat:Describe())
+      `, run: true },
+      { p: 'Запись <code>function Enemy:Describe()</code> с двоеточием — сокращение для функции с неявным первым параметром <code>self</code>. Вызов <code>orc:Describe()</code> передаёт <code>orc</code> в этот параметр. Так устроены и методы Roblox вроде <code>part:Destroy()</code>.' },
+      { note: 'Кроме <code>__index</code> бывают и другие метаметоды: <code>__tostring</code> (как превратить в текст), <code>__add</code> (как складывать), <code>__eq</code> (как сравнивать). Именно так устроен <code>Vector3</code>.' },
+    ],
+    task: {
+      prompt: 'Дополните класс <code>Enemy</code> двумя методами. <code>TakeDamage(amount)</code> уменьшает <code>hp</code>, но не ниже нуля. <code>IsDead()</code> возвращает <code>true</code>, если <code>hp</code> равно нулю.',
+      starter: L`
+        local Enemy = {}
+        Enemy.__index = Enemy
+
+        function Enemy.new(name, hp)
+            local self = setmetatable({}, Enemy)
+            self.name = name
+            self.hp = hp
+            return self
+        end
+
+        -- добавьте методы TakeDamage(amount) и IsDead()
+      `,
+      test: L`
+        local expect = __expect
+        local e = Enemy.new("Goblin", 50)
+        expect(type(e.TakeDamage) == "function", "Не найден метод Enemy:TakeDamage")
+        expect(type(e.IsDead) == "function", "Не найден метод Enemy:IsDead")
+        e:TakeDamage(20)
+        expect(e.hp == 30, "После TakeDamage(20) у врага с 50 HP должно остаться 30, а осталось " .. __show(e.hp))
+        expect(e:IsDead() == false, "Враг с 30 HP ещё жив")
+        e:TakeDamage(100)
+        expect(e.hp == 0, "Здоровье не должно уходить ниже нуля, сейчас " .. __show(e.hp))
+        expect(e:IsDead() == true, "Враг с 0 HP должен считаться мёртвым")
+      `,
+      hint: 'В TakeDamage можно написать self.hp = math.max(0, self.hp - amount). IsDead вернёт результат сравнения self.hp <= 0.',
+      solution: L`
+        local Enemy = {}
+        Enemy.__index = Enemy
+
+        function Enemy.new(name, hp)
+            local self = setmetatable({}, Enemy)
+            self.name = name
+            self.hp = hp
+            return self
+        end
+
+        function Enemy:TakeDamage(amount)
+            self.hp = math.max(0, self.hp - amount)
+        end
+
+        function Enemy:IsDead()
+            return self.hp <= 0
+        end
+      `,
+    },
+  },
+
+  /* ───────────── 12 ───────────── */
+  {
+    id: 'errors',
+    module: 'craft',
+    title: 'Ошибки и pcall',
+    min: 10,
+    lead: 'Ошибка в одном обработчике не должна ронять всю игру. Для этого есть защищённый вызов pcall.',
+    blocks: [
+      { p: 'Свою ошибку создаёт <code>error("текст")</code>. Обычная ошибка останавливает скрипт. Защищённый вызов <code>pcall(f, ...)</code> запускает функцию и возвращает <code>true</code> и результат, либо <code>false</code> и текст ошибки.' },
+      { code: L`
+        local function divide(a, b)
+            if b == 0 then
+                error("Деление на ноль", 0)
+            end
+            return a / b
+        end
+
+        print(pcall(divide, 10, 2))
+        print(pcall(divide, 1, 0))
+      `, run: true },
+      { p: 'Второй параметр <code>error</code> управляет тем, добавлять ли в текст место, где ошибка возникла. Для сообщений игроку подходит <code>0</code>.' },
+      { h: 'assert' },
+      { p: '<code>assert(условие, "сообщение")</code> ничего не делает, если условие истинно, и вызывает ошибку, если ложно. Удобно проверять входные данные.' },
+      { code: L`
+        local function setSpeed(value)
+            assert(type(value) == "number", "скорость должна быть числом")
+            return value
+        end
+
+        print(pcall(setSpeed, 16))
+        print(pcall(setSpeed, "быстро"))
+      `, run: true },
+      { note: 'В Roblox почти все обращения «наружу» (сохранение данных, покупки, HTTP) оборачивают в <code>pcall</code>: сеть может подвести в любой момент, и это нужно пережить без падения.' },
+    ],
+    task: {
+      prompt: 'Дана функция <code>divide</code>, которая вызывает ошибку при делении на ноль. Напишите функцию <code>safeDivide(a, b)</code> на базе <code>pcall</code>. При успехе она возвращает результат деления. При ошибке возвращает <code>nil</code> и текст ошибки вторым значением.',
+      starter: L`
+        local function divide(a, b)
+            if b == 0 then
+                error("Деление на ноль", 0)
+            end
+            return a / b
+        end
+
+        local function safeDivide(a, b)
+            -- ваш код
+        end
+      `,
+      test: L`
+        local expect = __expect
+        expect(type(safeDivide) == "function", "Функция safeDivide не найдена")
+        local v, m = safeDivide(10, 2)
+        expect(v == 5, "safeDivide(10, 2) должна вернуть 5, а вернула " .. __show(v))
+        v, m = safeDivide(1, 0)
+        expect(v == nil, "При делении на ноль первым значением должно быть nil, а вернулось " .. __show(v))
+        expect(type(m) == "string" and m:find("Деление на ноль", 1, true) ~= nil, "Вторым значением нужно вернуть текст ошибки")
+      `,
+      hint: 'Вызовите local ok, result = pcall(divide, a, b). Если ok истинно, верните result, иначе верните nil, result.',
+      solution: L`
+        local function divide(a, b)
+            if b == 0 then
+                error("Деление на ноль", 0)
+            end
+            return a / b
+        end
+
+        local function safeDivide(a, b)
+            local ok, result = pcall(divide, a, b)
+            if ok then
+                return result
+            end
+            return nil, result
+        end
+      `,
+    },
+  },
+
+  /* ───────────── 13 ───────────── */
+  {
+    id: 'studio',
+    module: 'roblox',
+    title: 'Roblox Studio и Luau',
+    min: 12,
+    lead: 'Основы языка позади. Теперь посмотрим, где в Roblox Studio живёт код и чем Luau отличается от Lua, которому мы учились.',
+    blocks: [
+      { h: 'Что вы увидите в Studio' },
+      { list: [
+        '<b>Explorer</b>: дерево всех объектов игры. Там лежат Workspace (мир), ServerScriptService (серверные скрипты), StarterPlayer и другие сервисы.',
+        '<b>Properties</b>: свойства выбранного объекта, например Position, Color, Anchored.',
+        '<b>Output</b>: сюда попадает всё, что выводит <code>print</code>, и сообщения об ошибках.',
+      ] },
+      { h: 'Три вида скриптов' },
+      { table: { head: ['Вид', 'Где работает', 'Для чего'], rows: [
+        ['<b>Script</b>', 'на сервере', 'игровая логика: очки, урон, сохранение данных'],
+        ['<b>LocalScript</b>', 'на устройстве игрока', 'ввод с клавиатуры, интерфейс, камера'],
+        ['<b>ModuleScript</b>', 'там, откуда его подключили', 'общие функции и классы; отдаёт таблицу через <code>return</code>, подключается через <code>require</code>'],
+      ] } },
+      { note: 'Правило безопасности: всё, что должно быть честным (очки, деньги, здоровье), считает сервер. Код на устройстве игрока можно подделать.' },
+      { h: 'Luau: Lua с дополнениями' },
+      { p: 'В Roblox используется Luau — быстрый потомок Lua 5.1. Всё, что вы выучили, работает. Дополнительно есть:' },
+      { list: [
+        'составное присваивание: <code>score += 10</code> вместо <code>score = score + 10</code>',
+        'ключевое слово <code>continue</code> в циклах',
+        'подсказки типов: <code>local speed: number = 16</code>',
+        'интерполяция строк: текст в обратных кавычках с подстановкой переменных в фигурных скобках, например &#96;Привет, {name}&#96;',
+        'библиотека <code>task</code>: <code>task.wait</code>, <code>task.spawn</code>, <code>task.delay</code>',
+        'готовые типы Roblox: <code>Vector3</code>, <code>Color3</code>, <code>Instance</code> и сотни других',
+      ] },
+      { note: 'В тренажёре работает обычный Lua 5.3 с небольшой эмуляцией Roblox. Составное присваивание поддерживается, но только отдельной строкой. Подсказки типов, <code>continue</code> и интерполяция строк не поддерживаются. Эмуляция покрывает то, что нужно в уроках. Настоящая игра запускается только в Studio.' },
+      { h: 'Первый серверный скрипт' },
+      { p: 'Так выглядит типичное начало серверного скрипта. Сервис получают через <code>game:GetService</code>, а на вход игроков подписываются событием. В тренажёре игрока можно «запустить» командой <code>__addPlayer</code>. В Studio её нет: там игроки приходят сами.' },
+      { code: L`
+        local Players = game:GetService("Players")
+
+        Players.PlayerAdded:Connect(function(player)
+            print(player.Name .. " зашёл в игру")
+        end)
+
+        __addPlayer("Alex")
+      `, run: true },
+    ],
+    quiz: [
+      {
+        q: 'Где должна считаться логика, которую игрок не должен уметь подделать, например баланс монет?',
+        opts: ['В LocalScript на устройстве игрока', 'В Script на сервере', 'В свойствах объекта в Properties'],
+        a: 1,
+        why: 'Сервер доверенный, а код на устройстве игрока можно изменить. Поэтому деньги, очки и здоровье считает серверный Script.',
+      },
+      {
+        q: 'Какой тип скрипта подходит для чтения нажатий клавиш?',
+        opts: ['Script', 'ModuleScript', 'LocalScript'],
+        a: 2,
+        why: 'Ввод приходит на устройство игрока, а LocalScript как раз выполняется там.',
+      },
+      {
+        q: 'Как называется диалект Lua, на котором пишут в Roblox?',
+        opts: ['Luau', 'LuaJIT', 'Robloxscript'],
+        a: 0,
+        why: 'Luau — язык Roblox, который развивается отдельно от Lua и добавляет типы, составное присваивание и библиотеку task.',
+      },
+      {
+        q: 'В какой панели Studio видно результат print?',
+        opts: ['Explorer', 'Output', 'Toolbox'],
+        a: 1,
+        why: 'Output — журнал сообщений. Туда попадают print, warn и ошибки скриптов.',
+      },
+      {
+        q: 'Что возвращает require, если подключить ModuleScript?',
+        opts: ['Всегда число 1', 'Значение, которое модуль вернул через return (обычно таблицу)', 'Текст исходного кода модуля'],
+        a: 1,
+        why: 'Модуль выполняется один раз, а его результат запоминается. Обычно модуль возвращает таблицу с функциями.',
+      },
+    ],
+  },
+
+  /* ───────────── 14 ───────────── */
+  {
+    id: 'instances',
+    module: 'roblox',
+    title: 'Instance и свойства',
+    min: 14,
+    lead: 'Всё, что есть в мире Roblox, — объекты типа Instance: детали, модели, звуки, скрипты. Научимся создавать их кодом и менять свойства.',
+    blocks: [
+      { note: 'Дальше в тренажёре работает мини-эмуляция Roblox: <code>Instance.new</code>, <code>workspace</code>, <code>Vector3</code>, события, игроки. Она ведёт себя как настоящая в рамках уроков, но не рисует мир. Весь код из этих уроков можно перенести в Studio почти без изменений.' },
+      { p: 'Объект создаёт <code>Instance.new("Part")</code>. Затем задают свойства, а в самом конце — <code>Parent</code>. Пока у объекта нет родителя, его нет в мире. Устанавливать <code>Parent</code> принято последним: так игре не приходится пересчитывать объект после каждой правки.' },
+      { code: L`
+        local part = Instance.new("Part")
+        part.Name = "Platform"
+        part.Size = Vector3.new(10, 1, 10)
+        part.Position = Vector3.new(0, 5, 0)
+        part.Anchored = true         -- не падает под действием гравитации
+        part.Parent = workspace      -- в самом конце
+
+        print(part:GetFullName(), part.Position)
+      `, run: true },
+      { h: 'Vector3: точка и размер' },
+      { p: 'Три числа X, Y, Z. Ось Y смотрит вверх. Векторы можно складывать, вычитать и умножать на число. Отдельные компоненты читаются как <code>v.X</code>, но менять их по отдельности нельзя, нужно присвоить новый вектор.' },
+      { code: L`
+        local a = Vector3.new(1, 2, 3)
+        local b = Vector3.new(0, 10, 0)
+        print(a + b)
+        print(a * 2)
+        print(Vector3.new(3, 4, 0).Magnitude)  -- длина вектора
+      `, run: true },
+      { h: 'Поиск и удаление' },
+      { code: L`
+        local p = Instance.new("Part")
+        p.Name = "Coin"
+        p.Parent = workspace
+
+        local found = workspace:FindFirstChild("Coin")
+        print(found ~= nil, #workspace:GetChildren())
+
+        found:Destroy()   -- удалить навсегда
+        print(workspace:FindFirstChild("Coin"))
+      `, run: true },
+      { note: '<code>FindFirstChild</code> возвращает <code>nil</code>, если ничего не нашёл. Не забывайте проверять результат, иначе вы получите ошибку «attempt to index nil».' },
+    ],
+    task: {
+      prompt: 'Постройте лестницу из пяти ступеней. Ступень с номером <code>i</code> — это <code>Part</code> с именем <code>"Step" .. i</code>, положением <code>Vector3.new(0, i * 2, i * 4)</code> и <code>Anchored = true</code>. Все ступени должны лежать в <code>workspace</code>.',
+      starter: L`
+        for i = 1, 5 do
+            -- создайте ступень Step1 ... Step5
+        end
+      `,
+      test: L`
+        local expect = __expect
+        for i = 1, 5 do
+            local p = workspace:FindFirstChild("Step" .. i)
+            expect(p ~= nil, "Не найдена ступень Step" .. i .. " в workspace")
+            expect(p.ClassName == "Part", "Step" .. i .. " должна быть объектом Part")
+            expect(p.Position == Vector3.new(0, i * 2, i * 4), "У Step" .. i .. " неверное положение: сейчас " .. tostring(p.Position) .. ", а нужно " .. tostring(Vector3.new(0, i * 2, i * 4)))
+            expect(p.Anchored == true, "Step" .. i .. " должна быть закреплена (Anchored = true)")
+        end
+      `,
+      hint: 'Внутри цикла: создайте Part через Instance.new, задайте Name как "Step" .. i, Position, Anchored, и последней строкой присвойте Parent = workspace.',
+      solution: L`
+        for i = 1, 5 do
+            local step = Instance.new("Part")
+            step.Name = "Step" .. i
+            step.Position = Vector3.new(0, i * 2, i * 4)
+            step.Anchored = true
+            step.Parent = workspace
+        end
+      `,
+    },
+  },
+
+  /* ───────────── 15 ───────────── */
+  {
+    id: 'events',
+    module: 'roblox',
+    title: 'События: Touched и Connect',
+    min: 14,
+    lead: 'Игра реагирует на происходящее: игрок коснулся детали, нажал кнопку, зашёл на сервер. Такие моменты в Roblox называются событиями.',
+    blocks: [
+      { p: 'У каждого события есть метод <code>Connect</code>. Ему передают функцию, и Roblox вызывает её, когда событие происходит. Например, у детали есть событие <code>Touched</code>, и в функцию приходит та деталь, которая коснулась.' },
+      { code: L`
+        local button = Instance.new("Part")
+        button.Name = "Button"
+        button.Parent = workspace
+
+        local count = 0
+        button.Touched:Connect(function(otherPart)
+            count += 1
+            print("Касание №" .. count .. ": " .. otherPart.Name)
+        end)
+
+        -- В Studio касание вызовет игра. В тренажёре событие можно вызвать вручную через Fire.
+        -- Метода Fire у встроенных событий Roblox нет. Это только для тренировки.
+        local hand = Instance.new("Part")
+        hand.Name = "LeftHand"
+        button.Touched:Fire(hand)
+        button.Touched:Fire(hand)
+      `, run: true },
+      { h: 'Как узнать, что коснулся игрок' },
+      { p: 'Игрока касается не он сам, а его часть тела (например, <code>LeftFoot</code>). Часть тела лежит внутри модели-персонажа, а в этой модели есть объект <code>Humanoid</code>. Поэтому типичная проверка выглядит так:' },
+      { code: L`
+        trap.Touched:Connect(function(hit)
+            local humanoid = hit.Parent:FindFirstChild("Humanoid")
+            if humanoid then
+                humanoid:TakeDamage(25)
+            end
+        end)
+      `, run: false },
+      { h: 'Защита от повторов (debounce)' },
+      { p: 'Событие <code>Touched</code> срабатывает много раз подряд. Если нужно, чтобы реакция была одна в секунду, используют флаг:' },
+      { code: L`
+        local debounce = false
+        trap.Touched:Connect(function(hit)
+            if debounce then return end
+            debounce = true
+            -- ... нанести урон ...
+            task.wait(1)
+            debounce = false
+        end)
+      `, run: false },
+      { note: '<code>Connect</code> возвращает соединение. Вызов <code>connection:Disconnect()</code> отключает обработчик.' },
+    ],
+    task: {
+      prompt: 'Деталь <code>trap</code> уже создана. Подключите к её событию <code>Touched</code> обработчик. Если коснулся персонаж (у <code>hit.Parent</code> есть <code>Humanoid</code>), отнимите у него 25 здоровья через <code>TakeDamage</code>. Если коснулся обычный объект, ничего происходить не должно.',
+      starter: L`
+        local trap = Instance.new("Part")
+        trap.Name = "Trap"
+        trap.Parent = workspace
+
+        -- подключите обработчик к trap.Touched
+      `,
+      test: L`
+        local expect = __expect
+        local character = Instance.new("Model")
+        local humanoid = Instance.new("Humanoid")
+        humanoid.Parent = character
+        local root = Instance.new("Part")
+        root.Name = "HumanoidRootPart"
+        root.Parent = character
+        character.Parent = workspace
+
+        trap.Touched:Fire(root)
+        expect(humanoid.Health == 75, "После касания у персонажа должно остаться 75 здоровья, а осталось " .. __show(humanoid.Health))
+        trap.Touched:Fire(root)
+        expect(humanoid.Health == 50, "После второго касания должно остаться 50, а осталось " .. __show(humanoid.Health))
+
+        local rock = Instance.new("Part")
+        rock.Name = "Rock"
+        rock.Parent = workspace
+        trap.Touched:Fire(rock)
+        __noHandlerErrors()
+        expect(humanoid.Health == 50, "Касание обычной детали не должно менять здоровье")
+      `,
+      hint: 'Внутри функции Connect получите local humanoid = hit.Parent:FindFirstChild("Humanoid"), проверьте if humanoid then ... end и вызовите humanoid:TakeDamage(25).',
+      solution: L`
+        local trap = Instance.new("Part")
+        trap.Name = "Trap"
+        trap.Parent = workspace
+
+        trap.Touched:Connect(function(hit)
+            local humanoid = hit.Parent:FindFirstChild("Humanoid")
+            if humanoid then
+                humanoid:TakeDamage(25)
+            end
+        end)
+      `,
+    },
+  },
+
+  /* ───────────── 16 ───────────── */
+  {
+    id: 'time',
+    module: 'roblox',
+    title: 'Время: task.wait и task.spawn',
+    min: 12,
+    lead: 'Игра живёт во времени: двери открываются на пять секунд, монеты появляются каждую секунду. Для этого в Roblox есть библиотека task.',
+    blocks: [
+      { p: '<code>task.wait(секунды)</code> приостанавливает текущий скрипт. Остальные скрипты игры в это время продолжают работать.' },
+      { note: 'В тренажёре время виртуальное: <code>task.wait(1)</code> не заставляет вас ждать секунду. Функция <code>time()</code> показывает, сколько секунд «прошло» по задумке программы.' },
+      { code: L`
+        print("Старт, время:", time())
+        for i = 3, 1, -1 do
+            print("До взрыва:", i)
+            task.wait(1)
+        end
+        print("Бум! Время:", time())
+      `, run: true },
+      { h: 'Параллельные потоки' },
+      { p: '<code>task.spawn(f)</code> запускает функцию в отдельном потоке, и основной код идёт дальше, не дожидаясь её. <code>task.delay(секунды, f)</code> запускает функцию через указанное время.' },
+      { code: L`
+        task.spawn(function()
+            for i = 1, 3 do
+                print("поток A", i)
+                task.wait(1)
+            end
+        end)
+
+        task.spawn(function()
+            for i = 1, 3 do
+                print("поток B", i)
+                task.wait(1.5)
+            end
+        end)
+
+        task.delay(2, function()
+            print("сработал delay")
+        end)
+
+        print("главный поток продолжает работу")
+      `, run: true },
+      { h: 'Бесконечные циклы в играх' },
+      { p: 'В играх цикл <code>while true do ... task.wait(1) end</code> — обычное дело: например, начислять очки каждую секунду. Пауза внутри обязательна. Без неё скрипт займёт все ресурсы и игра зависнет. Если такой цикл нужен рядом с остальным кодом, запустите его в <code>task.spawn</code>.' },
+      { code: L`
+        task.spawn(function()
+            local seconds = 0
+            while seconds < 3 do
+                seconds += 1
+                print("Прошло секунд:", seconds)
+                task.wait(1)
+            end
+        end)
+      `, run: true },
+    ],
+    task: {
+      prompt: 'Каждую секунду создавайте монету: <code>Part</code> с именем <code>"Coin"</code> и положением <code>Vector3.new(i * 3, 3, 0)</code> в <code>workspace</code>, где <code>i</code> — номер монеты. Всего нужно 5 монет. После создания каждой монеты ждите 1 секунду через <code>task.wait(1)</code>.',
+      starter: L`
+        for i = 1, 5 do
+            -- создайте монету и подождите секунду
+        end
+      `,
+      test: L`
+        local expect = __expect
+        local coins = {}
+        for _, child in ipairs(workspace:GetChildren()) do
+            if child.Name == "Coin" then coins[#coins + 1] = child end
+        end
+        expect(#coins == 5, "В workspace должно быть 5 монет с именем Coin, найдено " .. #coins)
+        for i, coin in ipairs(coins) do
+            expect(coin.Position == Vector3.new(i * 3, 3, 0), "Монета №" .. i .. " стоит в неверном месте: " .. tostring(coin.Position))
+        end
+        expect(time() >= 4, "Между монетами должна быть пауза в 1 секунду (task.wait(1)). Прошло только " .. tostring(time()) .. " с")
+      `,
+      hint: 'В цикле создайте Part, задайте Name и Position, присвойте Parent = workspace, а потом вызовите task.wait(1).',
+      solution: L`
+        for i = 1, 5 do
+            local coin = Instance.new("Part")
+            coin.Name = "Coin"
+            coin.Position = Vector3.new(i * 3, 3, 0)
+            coin.Parent = workspace
+            task.wait(1)
+        end
+      `,
+    },
+  },
+
+  /* ───────────── 17 ───────────── */
+  {
+    id: 'leaderstats',
+    module: 'roblox',
+    title: 'Игроки и таблица лидеров',
+    min: 14,
+    lead: 'Теперь займёмся игроками. Создадим то, что есть в большинстве игр Roblox: таблицу с очками в углу экрана.',
+    blocks: [
+      { p: 'Сервис <code>Players</code> знает обо всех игроках. Его событие <code>PlayerAdded</code> срабатывает, когда игрок заходит, и передаёт объект <code>Player</code>.' },
+      { p: 'Roblox сам рисует таблицу лидеров, если у игрока есть папка с именем <code>leaderstats</code>, а внутри неё лежат объекты-значения (<code>IntValue</code>, <code>NumberValue</code>, <code>StringValue</code>). Каждое значение становится колонкой таблицы.' },
+      { code: L`
+        local Players = game:GetService("Players")
+
+        Players.PlayerAdded:Connect(function(player)
+            local leaderstats = Instance.new("Folder")
+            leaderstats.Name = "leaderstats"
+            leaderstats.Parent = player
+
+            local coins = Instance.new("IntValue")
+            coins.Name = "Coins"
+            coins.Value = 0
+            coins.Parent = leaderstats
+        end)
+
+        __addPlayer("Alex")   -- только для тренажёра: заходит игрок
+        local alex = Players:FindFirstChild("Alex")
+        print(alex.leaderstats.Coins.Value)
+
+        alex.leaderstats.Coins.Value += 10
+        print(alex.leaderstats.Coins.Value)
+      `, run: true },
+      { p: 'Обратите внимание на запись <code>alex.leaderstats.Coins.Value</code>. Дочерние объекты доступны через точку по имени, как свойства.' },
+      { note: 'Каждый игрок получает свою папку, поэтому очки у игроков не смешиваются. Функция, меняющая значение, получает игрока в параметре.' },
+    ],
+    task: {
+      prompt: 'Сделайте две вещи. Первое: при заходе игрока создайте у него папку <code>leaderstats</code> с <code>IntValue</code> по имени <code>Coins</code>, равным 0. Второе: напишите функцию <code>giveCoins(player, amount)</code>, которая прибавляет <code>amount</code> монет игроку.',
+      starter: L`
+        local Players = game:GetService("Players")
+
+        -- 1. при заходе игрока создайте leaderstats и Coins
+
+        -- 2. функция giveCoins(player, amount)
+        local function giveCoins(player, amount)
+        end
+      `,
+      test: L`
+        local expect = __expect
+        expect(type(giveCoins) == "function", "Функция giveCoins не найдена")
+        local alex = __addPlayer("Alex")
+        local stats = alex:FindFirstChild("leaderstats")
+        expect(stats ~= nil, "У игрока должна появиться папка leaderstats")
+        expect(stats.ClassName == "Folder", "leaderstats должна быть объектом Folder")
+        local coins = stats:FindFirstChild("Coins")
+        expect(coins ~= nil, "В leaderstats должен быть объект Coins")
+        expect(coins.ClassName == "IntValue", "Coins должен быть объектом IntValue")
+        expect(coins.Value == 0, "Стартовое значение Coins должно быть 0")
+        giveCoins(alex, 5)
+        giveCoins(alex, 10)
+        expect(coins.Value == 15, "После giveCoins(alex, 5) и giveCoins(alex, 10) должно быть 15, а сейчас " .. __show(coins.Value))
+        local bo = __addPlayer("Bo")
+        expect(bo.leaderstats.Coins.Value == 0, "У нового игрока должно быть 0 монет, свои значения у каждого игрока")
+        __noHandlerErrors()
+      `,
+      hint: 'Внутри PlayerAdded создайте Folder, потом IntValue, и каждому задайте Name и Parent. В giveCoins доберитесь до player.leaderstats.Coins.Value и прибавьте amount.',
+      solution: L`
+        local Players = game:GetService("Players")
+
+        Players.PlayerAdded:Connect(function(player)
+            local leaderstats = Instance.new("Folder")
+            leaderstats.Name = "leaderstats"
+            leaderstats.Parent = player
+
+            local coins = Instance.new("IntValue")
+            coins.Name = "Coins"
+            coins.Value = 0
+            coins.Parent = leaderstats
+        end)
+
+        local function giveCoins(player, amount)
+            player.leaderstats.Coins.Value += amount
+        end
+      `,
+    },
+  },
+
+  /* ───────────── 18 ───────────── */
+  {
+    id: 'project',
+    module: 'roblox',
+    title: 'Мини-проект: монеты',
+    min: 15,
+    lead: 'Соберём всё вместе. Монета лежит в мире, игрок касается её, получает очко в таблицу лидеров, а монета исчезает.',
+    blocks: [
+      { p: 'Вам понадобится всё, что вы выучили: создание объектов, событие <code>Touched</code>, поиск <code>Humanoid</code>, <code>leaderstats</code> и удаление через <code>Destroy</code>. Одна новая функция: <code>Players:GetPlayerFromCharacter(model)</code> возвращает игрока, которому принадлежит персонаж, или <code>nil</code>, если модель — не персонаж.' },
+      { code: L`
+        local Players = game:GetService("Players")
+
+        Players.PlayerAdded:Connect(function(player)
+            local leaderstats = Instance.new("Folder")
+            leaderstats.Name = "leaderstats"
+            leaderstats.Parent = player
+            local coins = Instance.new("IntValue")
+            coins.Name = "Coins"
+            coins.Parent = leaderstats
+        end)
+
+        local alex = __addPlayer("Alex")
+        local character = alex.Character
+        print(Players:GetPlayerFromCharacter(character) == alex)
+        print(Players:GetPlayerFromCharacter(workspace))  -- не персонаж
+      `, run: true },
+      { p: 'Игрок касается монеты частью тела, а не целым персонажем. Поэтому в обработчике Touched вызывают <code>GetPlayerFromCharacter(hit.Parent)</code>: родитель части тела — это модель персонажа.' },
+    ],
+    task: {
+      prompt: 'Напишите функцию <code>makeCoin(position)</code>. Она создаёт <code>Part</code> с именем <code>"Coin"</code> в указанном месте, кладёт его в <code>workspace</code> и <b>возвращает</b>. Когда монеты касается игрок, ему добавляется 1 монета в <code>leaderstats.Coins</code>, а сама монета удаляется. Касание любого другого объекта ничего не меняет. Код для таблицы лидеров уже написан.',
+      starter: L`
+        local Players = game:GetService("Players")
+
+        Players.PlayerAdded:Connect(function(player)
+            local leaderstats = Instance.new("Folder")
+            leaderstats.Name = "leaderstats"
+            leaderstats.Parent = player
+
+            local coins = Instance.new("IntValue")
+            coins.Name = "Coins"
+            coins.Value = 0
+            coins.Parent = leaderstats
+        end)
+
+        local function makeCoin(position)
+            -- ваш код
+        end
+      `,
+      test: L`
+        local expect = __expect
+        expect(type(makeCoin) == "function", "Функция makeCoin не найдена")
+        local alex = __addPlayer("Alex")
+        local coin = makeCoin(Vector3.new(0, 5, 0))
+        expect(coin ~= nil, "makeCoin должна вернуть созданную монету")
+        expect(coin.Name == "Coin", "Монета должна называться Coin")
+        expect(coin.Position == Vector3.new(0, 5, 0), "Монета стоит не там, где просили: " .. tostring(coin.Position))
+        expect(coin.Parent == workspace, "Монета должна лежать в workspace")
+
+        local rock = Instance.new("Part")
+        rock.Name = "Rock"
+        rock.Parent = workspace
+        coin.Touched:Fire(rock)
+        expect(coin.Parent == workspace, "Касание обычного объекта не должно убирать монету")
+        expect(alex.leaderstats.Coins.Value == 0, "Касание обычного объекта не должно давать монеты")
+
+        coin.Touched:Fire(alex.Character.HumanoidRootPart)
+        expect(alex.leaderstats.Coins.Value == 1, "После касания игрока в Coins должно быть 1, а сейчас " .. __show(alex.leaderstats.Coins.Value))
+        expect(coin.Parent == nil, "После касания монета должна быть удалена (Destroy)")
+
+        coin.Touched:Fire(alex.Character.HumanoidRootPart)
+        expect(alex.leaderstats.Coins.Value == 1, "Одна монета не должна давать очко дважды")
+        __noHandlerErrors()
+      `,
+      hint: 'После создания монеты подключите coin.Touched:Connect(function(hit) ... end). Внутри: local player = Players:GetPlayerFromCharacter(hit.Parent). Если player есть, прибавьте 1 к player.leaderstats.Coins.Value и вызовите coin:Destroy(). В конце функции не забудьте return coin.',
+      solution: L`
+        local Players = game:GetService("Players")
+
+        Players.PlayerAdded:Connect(function(player)
+            local leaderstats = Instance.new("Folder")
+            leaderstats.Name = "leaderstats"
+            leaderstats.Parent = player
+
+            local coins = Instance.new("IntValue")
+            coins.Name = "Coins"
+            coins.Value = 0
+            coins.Parent = leaderstats
+        end)
+
+        local function makeCoin(position)
+            local coin = Instance.new("Part")
+            coin.Name = "Coin"
+            coin.Position = position
+            coin.Anchored = true
+            coin.Parent = workspace
+
+            coin.Touched:Connect(function(hit)
+                local player = Players:GetPlayerFromCharacter(hit.Parent)
+                if player then
+                    player.leaderstats.Coins.Value += 1
+                    coin:Destroy()
+                end
+            end)
+
+            return coin
+        end
+      `,
+    },
+    finale: true,
+  },
+];
+
+
+</script>
+<script>
+/* Интерфейс курса */
+(function () {
+  const store = {
+    get(k) {
+      try { return localStorage.getItem(k); } catch (e) { return null; }
+    },
+    set(k, v) {
+      try { localStorage.setItem(k, v); } catch (e) { /* хранилище недоступно */ }
+    },
+    del(k) {
+      try { localStorage.removeItem(k); } catch (e) { /* хранилище недоступно */ }
+    },
+  };
+  const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const $ = (sel, root) => (root || document).querySelector(sel);
+
+  let doneList = [];
+  try { doneList = JSON.parse(store.get('lc.done') || '[]'); } catch (e) { doneList = []; }
+  const done = new Set(doneList.filter((id) => LESSONS.some((l) => l.id === id)));
+  const total = LESSONS.length;
+  const byId = (id) => LESSONS.find((l) => l.id === id);
+  const indexOf = (id) => LESSONS.findIndex((l) => l.id === id);
+  let currentId = 'home';
+
+  /* ───── Подсветка Lua ───── */
+  const KW = new Set('and break do else elseif end false for function goto if in local nil not or repeat return then true until while'.split(' '));
+  const BUILTIN = new Set('print warn type typeof tostring tonumber pairs ipairs next select pcall error assert setmetatable getmetatable math string table task game workspace script Instance Vector3 Color3 BrickColor Enum time tick wait'.split(' '));
+  const TOKEN = /--\[(=*)\[[\s\S]*?\]\1\]|--[^\n]*|\[(=*)\[[\s\S]*?\]\2\]|"(?:\\.|[^"\\\n])*"?|'(?:\\.|[^'\\\n])*'?|\b0[xX][0-9a-fA-F]+\b|\b\d+\.?\d*(?:[eE][+-]?\d+)?\b|[A-Za-z_]\w*/g;
+  function highlight(src) {
+    let out = '';
+    let last = 0;
+    let m;
+    TOKEN.lastIndex = 0;
+    while ((m = TOKEN.exec(src))) {
+      out += esc(src.slice(last, m.index));
+      last = m.index + m[0].length;
+      const t = m[0];
+      let cls = '';
+      if (t.startsWith('--')) cls = 'c';
+      else if (t[0] === '"' || t[0] === "'" || t[0] === '[') cls = 's';
+      else if (/^\d/.test(t)) cls = 'n';
+      else if (KW.has(t)) cls = 'k';
+      else if (BUILTIN.has(t)) cls = 'b';
+      out += cls ? `<span class="t-${cls}">${esc(t)}</span>` : esc(t);
+    }
+    return out + esc(src.slice(last));
+  }
+
+  /* ───── Луна ───── */
+  function moonSVG(f, size, label) {
+    let lit = '';
+    if (f >= 1) lit = '<circle cx="24" cy="24" r="20" fill="var(--moon)"/>';
+    else if (f > 0) {
+      const rx = (20 * Math.abs(1 - 2 * f)).toFixed(2);
+      lit = `<path d="M24 4A20 20 0 0 1 24 44A${rx} 20 0 0 ${f < 0.5 ? 0 : 1} 24 4Z" fill="var(--moon)"/>`;
+    }
+    return `<svg viewBox="0 0 48 48" width="${size}" height="${size}" role="img" aria-label="${esc(label)}"><circle cx="24" cy="24" r="20" fill="var(--moon-dim)"/>${lit}<circle cx="24" cy="24" r="20" fill="none" stroke="var(--line-strong)" stroke-width="1.5"/></svg>`;
+  }
+  const PLAY = '<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 1.5v11l9-5.5z" fill="currentColor"/></svg>';
+
+  /* ───── Редактор ───── */
+  function createEditor(code, opts) {
+    opts = opts || {};
+    const root = document.createElement('div');
+    root.className = 'ed' + (opts.readOnly ? ' readonly' : '');
+    root.innerHTML =
+      '<pre class="ed-gutter" aria-hidden="true"></pre>' +
+      '<div class="ed-body"><div class="ed-inner"><pre class="ed-hl" aria-hidden="true"></pre>' +
+      `<textarea class="ed-ta" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" aria-label="${esc(opts.label || 'Код на Lua')}"></textarea>` +
+      '</div></div>';
+    const gut = $('.ed-gutter', root);
+    const hl = $('.ed-hl', root);
+    const ta = $('.ed-ta', root);
+    ta.readOnly = !!opts.readOnly;
+    ta.value = code;
+    let errLine = null;
+    let trap = true;
+
+    function paint() {
+      const v = ta.value;
+      hl.innerHTML = highlight(v) + (v.endsWith('\n') ? ' ' : '');
+      const n = v.split('\n').length;
+      let g = '';
+      for (let i = 1; i <= n; i++) g += (i > 1 ? '\n' : '') + (i === errLine ? `<span class="err">${i}</span>` : i);
+      gut.innerHTML = g;
+    }
+    function insert(text) {
+      ta.focus();
+      let ok = false;
+      try { ok = document.execCommand('insertText', false, text); } catch (e) { ok = false; }
+      if (!ok) {
+        ta.setRangeText(text, ta.selectionStart, ta.selectionEnd, 'end');
+        ta.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    }
+    function shiftLines(outdent) {
+      const v = ta.value;
+      const s = ta.selectionStart;
+      const e = ta.selectionEnd;
+      const ls = v.lastIndexOf('\n', s - 1) + 1;
+      let le = v.indexOf('\n', e);
+      if (le === -1) le = v.length;
+      const block = v.slice(ls, le).split('\n');
+      const changed = block.map((line) => (outdent ? line.replace(/^(\t| {1,4})/, '') : '\t' + line));
+      const text = changed.join('\n');
+      ta.setSelectionRange(ls, le);
+      ta.setRangeText(text, ls, le, 'select');
+      ta.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+
+    ta.addEventListener('input', () => {
+      errLine = null;
+      paint();
+      if (opts.onInput) opts.onInput(ta.value);
+    });
+    ta.addEventListener('blur', () => { trap = true; });
+    ta.addEventListener('keydown', (e) => {
+      if (opts.readOnly) return;
+      if (e.key === 'Escape') { trap = false; return; }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        if (opts.onRun) opts.onRun();
+        return;
+      }
+      if (e.key === 'Tab' && trap) {
+        e.preventDefault();
+        const multi = ta.value.slice(ta.selectionStart, ta.selectionEnd).includes('\n');
+        if (multi || e.shiftKey) shiftLines(e.shiftKey);
+        else insert('\t');
+        return;
+      }
+      if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        const v = ta.value;
+        const s = ta.selectionStart;
+        const ls = v.lastIndexOf('\n', s - 1) + 1;
+        const line = v.slice(ls, s);
+        const indent = /^[ \t]*/.exec(line)[0];
+        const bare = line.replace(/--.*$/, '');
+        const extra = /(\bthen|\bdo|\belse|\brepeat|\bfunction\b.*\)|\{)\s*$/.test(bare) ? '\t' : '';
+        e.preventDefault();
+        insert('\n' + indent + extra);
+      }
+    });
+    paint();
+    return {
+      el: root,
+      get: () => ta.value,
+      set(v) { ta.value = v; errLine = null; paint(); },
+      markError(n) { errLine = n; paint(); },
+      focus: () => ta.focus(),
+    };
+  }
+
+  /* ───── Вывод ───── */
+  function renderOut(el, res) {
+    el.hidden = false;
+    let html = '';
+    for (const o of res.out) {
+      let t = o.t;
+      if (o.k === 'err') t = t.replace(/^main:(\d+): /, 'Строка $1: ');
+      html += `<div class="ln k-${o.k}">${t ? esc(t) : '&nbsp;'}</div>`;
+    }
+    if (res.error) {
+      const e = res.error;
+      html += `<div class="ln k-err">${e.line ? `Строка ${e.line}: ` : ''}${esc(e.msg)}</div>`;
+      if (e.hint) html += `<div class="ln k-hint">${esc(e.hint)}</div>`;
+    }
+    if (!html) html = '<div class="ln k-dim">Программа ничего не вывела.</div>';
+    el.innerHTML = html;
+  }
+  function newOut() {
+    const out = document.createElement('div');
+    out.className = 'out';
+    out.setAttribute('role', 'log');
+    out.setAttribute('aria-live', 'polite');
+    out.hidden = true;
+    return out;
+  }
+  function el(tag, cls, html) {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (html != null) n.innerHTML = html;
+    return n;
+  }
+  function button(label, cls, onClick) {
+    const b = el('button', 'btn ' + (cls || ''), label);
+    b.type = 'button';
+    b.addEventListener('click', onClick);
+    return b;
+  }
+
+  /* ───── Блоки урока ───── */
+  function exampleBlock(code) {
+    const wrap = el('div', 'example');
+    const out = newOut();
+    const ed = createEditor(code, { label: 'Пример кода, его можно менять', onRun: run });
+    function run() {
+      const res = LuaEngine.run(ed.get());
+      renderOut(out, res);
+      ed.markError(res.error && res.error.line ? res.error.line : null);
+    }
+    const actions = el('div', 'actions');
+    actions.append(
+      button(PLAY + ' Запустить', 'btn-primary', run),
+      button('Сбросить', 'btn-ghost', () => { ed.set(code); out.hidden = true; })
+    );
+    actions.append(el('span', 'spacer'), el('span', 'kbd', 'Ctrl + Enter'));
+    wrap.append(ed.el, actions, out);
+    return wrap;
+  }
+  function staticCode(code) {
+    return createEditor(code, { readOnly: true, label: 'Пример кода' }).el;
+  }
+  function renderBlock(b) {
+    if (b.p) return el('p', null, b.p);
+    if (b.h) return el('h3', null, b.h);
+    if (b.note) return el('div', 'note', b.note);
+    if (b.list) return el('ul', null, b.list.map((i) => `<li>${i}</li>`).join(''));
+    if (b.table) {
+      const t = b.table;
+      const html =
+        '<table><thead><tr>' + t.head.map((h) => `<th>${h}</th>`).join('') + '</tr></thead><tbody>' +
+        t.rows.map((r) => '<tr>' + r.map((c) => `<td>${c}</td>`).join('') + '</tr>').join('') + '</tbody></table>';
+      return el('div', 'tbl', html);
+    }
+    if (b.code) return b.run ? exampleBlock(b.code) : staticCode(b.code);
+    return el('div');
+  }
+
+  /* ───── Задание ───── */
+  function taskBlock(l) {
+    const t = l.task;
+    const sec = el('section', 'task');
+    const head = el('div', 'task-head');
+    const pill = el('span', 'pill', 'Задание');
+    const h = el('h2', null, 'Попробуйте сами');
+    head.append(pill, h);
+    sec.append(head, el('div', 'task-prompt', t.prompt));
+
+    const saved = store.get('lc.code.' + l.id);
+    let timer = null;
+    const ed = createEditor(saved != null ? saved : t.starter, {
+      label: 'Редактор задания',
+      onRun: run,
+      onInput(v) {
+        clearTimeout(timer);
+        timer = setTimeout(() => store.set('lc.code.' + l.id, v), 300);
+      },
+    });
+    const out = newOut();
+    const verdict = el('div', 'verdict');
+    verdict.hidden = true;
+    verdict.setAttribute('role', 'status');
+    const hint = el('div', 'hintbox', '<b>Подсказка.</b> ' + esc(t.hint));
+    hint.hidden = true;
+    const solBox = el('div', 'example');
+    solBox.hidden = true;
+
+    function setPill() {
+      pill.textContent = done.has(l.id) ? 'Выполнено' : 'Задание';
+      pill.className = 'pill' + (done.has(l.id) ? ' ok' : '');
+    }
+    function run() {
+      const res = LuaEngine.run(ed.get());
+      renderOut(out, res);
+      ed.markError(res.error && res.error.line ? res.error.line : null);
+      verdict.hidden = true;
+    }
+    function check() {
+      const res = LuaEngine.run(ed.get(), { test: t.test, expectOut: t.expectOut, minOut: t.minOut });
+      renderOut(out, res);
+      ed.markError(res.error && res.error.line ? res.error.line : null);
+      verdict.hidden = false;
+      verdict.innerHTML = '';
+      if (res.status === 'pass') {
+        verdict.className = 'verdict ok';
+        verdict.innerHTML = '<div class="msg"><strong>Верно!</strong>Все проверки пройдены.</div>';
+        markDone(l.id);
+        setPill();
+        const next = LESSONS[indexOf(l.id) + 1];
+        if (next) verdict.append(button('Следующий урок', 'btn-primary', () => go(next.id)));
+        if (l.finale) showFinale(sec);
+      } else if (res.status === 'fail') {
+        verdict.className = 'verdict bad';
+        verdict.innerHTML = `<div class="msg"><strong>Пока не то.</strong>${esc(res.failMsg)}</div>`;
+      } else {
+        verdict.className = 'verdict bad';
+        verdict.innerHTML = '<div class="msg"><strong>Код не выполнился.</strong>Исправьте ошибку из окна вывода и проверьте снова.</div>';
+      }
+    }
+
+    let solArmed = false;
+    let solTimer = null;
+    const solBtn = button('Показать решение', 'btn-ghost', () => {
+      if (!solArmed && solBox.hidden) {
+        solArmed = true;
+        solBtn.textContent = 'Точно показать решение?';
+        clearTimeout(solTimer);
+        solTimer = setTimeout(() => { solArmed = false; solBtn.textContent = 'Показать решение'; }, 4000);
+        return;
+      }
+      solArmed = false;
+      if (!solBox.hidden) {
+        solBox.hidden = true;
+        solBtn.textContent = 'Показать решение';
+        return;
+      }
+      solBox.hidden = false;
+      solBox.innerHTML = '';
+      solBox.append(staticCode(t.solution));
+      const use = el('div', 'actions');
+      use.append(button('Подставить в редактор', '', () => { ed.set(t.solution); store.set('lc.code.' + l.id, t.solution); }));
+      solBox.append(use);
+      solBtn.textContent = 'Скрыть решение';
+    });
+    const hintBtn = button('Подсказка', 'btn-ghost', () => {
+      hint.hidden = !hint.hidden;
+    });
+
+    const actions = el('div', 'actions');
+    actions.append(
+      button(PLAY + ' Запустить', '', run),
+      button('Проверить', 'btn-primary', check),
+      button('Сбросить', 'btn-ghost', () => {
+        ed.set(t.starter);
+        store.del('lc.code.' + l.id);
+        out.hidden = true;
+        verdict.hidden = true;
+      }),
+      el('span', 'spacer'),
+      hintBtn,
+      solBtn
+    );
+    setPill();
+    sec.append(ed.el, actions, hint, verdict, out, solBox);
+    return sec;
+  }
+
+  function showFinale(after) {
+    if ($('.finale')) return;
+    const box = el('div', 'finale');
+    box.innerHTML =
+      moonSVG(1, 64, 'Полная луна') +
+      '<div><h2>Курс пройден</h2><p>Вы прошли путь от первой строки print до работающей механики с событиями, игроками и таблицей лидеров. Дальше стоит открыть Roblox Studio и собрать то же самое уже в настоящей игре.</p>' +
+      '<div class="actions"><a class="btn btn-primary" href="https://create.roblox.com/docs" target="_blank" rel="noopener">Документация Roblox</a>' +
+      '<a class="btn" href="https://luau.org/" target="_blank" rel="noopener">Язык Luau</a></div></div>';
+    after.after(box);
+  }
+
+  /* ───── Викторина ───── */
+  function quizBlock(l) {
+    const wrap = el('section', 'quiz');
+    const state = l.quiz.map(() => false);
+    const result = el('div', 'verdict ok');
+    result.hidden = true;
+    result.setAttribute('role', 'status');
+    l.quiz.forEach((q, qi) => {
+      const f = el('fieldset', 'q');
+      f.append(el('legend', null, esc(q.q)));
+      const why = el('p', 'why');
+      why.hidden = true;
+      const btns = q.opts.map((o, oi) => {
+        const b = el('button', 'opt', esc(o));
+        b.type = 'button';
+        b.addEventListener('click', () => {
+          if (state[qi]) return;
+          if (oi === q.a) {
+            state[qi] = true;
+            b.classList.add('ok');
+            btns.forEach((x) => { x.disabled = true; });
+            why.hidden = false;
+            why.textContent = 'Верно. ' + q.why;
+            if (state.every(Boolean)) {
+              markDone(l.id);
+              result.hidden = false;
+              result.innerHTML = '<div class="msg"><strong>Викторина пройдена.</strong>Все ответы верные.</div>';
+              const next = LESSONS[indexOf(l.id) + 1];
+              if (next) result.append(button('Следующий урок', 'btn-primary', () => go(next.id)));
+            }
+          } else {
+            b.classList.add('bad');
+            b.disabled = true;
+            why.hidden = false;
+            why.textContent = 'Не совсем. Попробуйте другой вариант.';
+          }
+        });
+        return b;
+      });
+      f.append(...btns, why);
+      wrap.append(f);
+    });
+    wrap.append(result);
+    return wrap;
+  }
+
+  /* ───── Экраны ───── */
+  const main = $('#main');
+  const nav = $('#nav');
+  const side = $('#side');
+  const scrim = $('#scrim');
+
+  function lessonLink(l, i) {
+    return `<a href="#l-${l.id}" data-go="${l.id}"${currentId === l.id ? ' aria-current="page"' : ''}><span class="num">${done.has(l.id) ? '✓' : i + 1}</span><span>${esc(l.title)}</span></a>`;
+  }
+  function renderNav() {
+    let html = '';
+    MODULES.forEach((m) => {
+      const items = LESSONS.map((l, i) => [l, i]).filter(([l]) => l.module === m.id);
+      html += `<div class="nav-mod"><h2>${esc(m.title)}</h2><ul>` +
+        items.map(([l, i]) => `<li class="${done.has(l.id) ? 'done' : ''}">${lessonLink(l, i)}</li>`).join('') + '</ul></div>';
+    });
+    nav.innerHTML = html;
+  }
+  function renderProgress() {
+    const f = done.size / total;
+    const label = `Пройдено ${done.size} из ${total}`;
+    $('#sideMoon').innerHTML = moonSVG(f, 44, label);
+    $('#topMoon').innerHTML = moonSVG(f, 30, label);
+    $('#progText').textContent = label;
+    $('#progBar').style.width = Math.round(f * 100) + '%';
+  }
+  function markDone(id) {
+    if (done.has(id)) return;
+    done.add(id);
+    store.set('lc.done', JSON.stringify([...done]));
+    renderNav();
+    renderProgress();
+  }
+
+  function firstOpen() {
+    const l = LESSONS.find((x) => !done.has(x.id));
+    return l ? l.id : LESSONS[0].id;
+  }
+
+  function renderHome() {
+    const view = el('div', 'view wide');
+    const open = firstOpen();
+    const started = done.size > 0;
+    const hero = el('div', 'hero');
+    const text = el('div', 'hero-text');
+    const f = done.size / total;
+    text.innerHTML =
+      '<span class="eyebrow">Курс для начинающих</span>' +
+      '<h1>Lua для Roblox с нуля</h1>' +
+      `<p class="lead">${total} коротких уроков: от первой строки кода до собственной игровой механики. Код запускается прямо на этой странице, а задачи проверяются автоматически.</p>` +
+      `<div class="hero-moon">${moonSVG(f, 72, `Пройдено ${done.size} из ${total}`)}<small>Луна растёт с каждым пройденным уроком: ${done.size} из ${total}.</small></div>`;
+    const actions = el('div', 'actions');
+    actions.append(
+      button(started && done.size < total ? `Продолжить с урока ${indexOf(open) + 1}` : 'Начать с первого урока', 'btn-primary', () => go(done.size === total ? LESSONS[0].id : open))
+    );
+    text.append(actions);
+
+    const demo = el('div', 'example');
+    demo.append(el('span', 'eyebrow', 'Попробуйте прямо сейчас'));
+    const demoCode = L`
+      local players = {"Alex", "Mira", "Kai"}
+
+      for i, name in ipairs(players) do
+          print(i .. ". Привет, " .. name .. "!")
+      end
+    `;
+    const out = newOut();
+    const ed = createEditor(demoCode, { label: 'Пример кода, его можно менять', onRun: run });
+    function run() {
+      const res = LuaEngine.run(ed.get());
+      renderOut(out, res);
+      ed.markError(res.error && res.error.line ? res.error.line : null);
+    }
+    const da = el('div', 'actions');
+    da.append(button(PLAY + ' Запустить', 'btn-primary', run), el('span', 'spacer'), el('span', 'kbd', 'Ctrl + Enter'));
+    demo.append(ed.el, da, out);
+    hero.append(text, demo);
+    view.append(hero);
+
+    view.append(el('h3', null, 'Программа'));
+    const mods = el('div', 'mods');
+    MODULES.forEach((m) => {
+      const items = LESSONS.map((l, i) => [l, i]).filter(([l]) => l.module === m.id);
+      const d = items.filter(([l]) => done.has(l.id)).length;
+      const card = el('div', 'mod');
+      card.innerHTML = `<h3>${esc(m.title)}</h3><span class="count">${d} из ${items.length}</span><ul>` +
+        items.map(([l, i]) => `<li class="${done.has(l.id) ? 'done' : ''}"><a href="#l-${l.id}" data-go="${l.id}"><span>${i + 1}. ${esc(l.title)}</span></a></li>`).join('') + '</ul>';
+      mods.append(card);
+    });
+    view.append(mods);
+
+    view.append(el('h3', null, 'Как это устроено'));
+    view.append(el('ul', 'facts',
+      '<li>Lua 5.3 работает в вашем браузере, ничего устанавливать не нужно.</li>' +
+      '<li>Для уроков про Roblox есть упрощённая эмуляция: объекты Instance, события, игроки. Мир она не рисует, но поведение кода повторяет.</li>' +
+      '<li>Roblox использует Luau, потомка Lua. Различия коротко описаны в уроке про Studio.</li>' +
+      '<li>Прогресс и ваш код сохраняются в этом браузере, если он разрешает хранить данные.</li>'
+    ));
+    return view;
+  }
+
+  function renderLesson(l) {
+    const i = indexOf(l.id);
+    const mod = MODULES.find((m) => m.id === l.module);
+    const view = el('article', 'view');
+    const head = el('header');
+    head.style.display = 'flex';
+    head.style.flexDirection = 'column';
+    head.style.gap = '0.6rem';
+    head.innerHTML = `<span class="eyebrow">${esc(mod.title)} · Урок ${i + 1} из ${total} · ${l.min} мин</span><h1 tabindex="-1" id="lessonTitle">${esc(l.title)}</h1><p class="lead">${esc(l.lead)}</p>`;
+    view.append(head);
+    const body = el('div', 'body');
+    l.blocks.forEach((b) => body.append(renderBlock(b)));
+    view.append(body);
+    if (l.quiz) view.append(quizBlock(l));
+    if (l.task) {
+      const t = taskBlock(l);
+      view.append(t);
+      if (l.finale && done.has(l.id)) showFinale(t);
+    }
+    const pager = el('div', 'pager');
+    const prev = LESSONS[i - 1];
+    const next = LESSONS[i + 1];
+    pager.append(
+      prev ? button('← ' + prev.title, '', () => go(prev.id)) : button('← К программе', '', () => go('home')),
+      next ? button(next.title + ' →', '', () => go(next.id)) : el('span')
+    );
+    view.append(pager);
+    return view;
+  }
+
+  function go(id) {
+    const l = byId(id);
+    currentId = l ? id : 'home';
+    main.innerHTML = '';
+    main.append(l ? renderLesson(l) : renderHome());
+    renderNav();
+    closeNav();
+    window.scrollTo(0, 0);
+    const title = $('#lessonTitle');
+    if (title) title.focus({ preventScroll: true });
+    try { history.replaceState(null, '', currentId === 'home' ? '#' : '#l-' + currentId); } catch (e) { /* адрес менять нельзя */ }
+    if (l) store.set('lc.last', id);
+  }
+
+  function openNav() {
+    side.classList.add('open');
+    scrim.hidden = false;
+    $('#menuBtn').setAttribute('aria-expanded', 'true');
+  }
+  function closeNav() {
+    side.classList.remove('open');
+    scrim.hidden = true;
+    $('#menuBtn').setAttribute('aria-expanded', 'false');
+  }
+
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('[data-go]');
+    if (a) {
+      e.preventDefault();
+      go(a.getAttribute('data-go'));
+    }
+  });
+  $('#menuBtn').addEventListener('click', () => (side.classList.contains('open') ? closeNav() : openNav()));
+  scrim.addEventListener('click', closeNav);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && side.classList.contains('open')) closeNav();
+  });
+  window.addEventListener('hashchange', () => {
+    const m = /^#l-([\w-]+)$/.exec(location.hash);
+    const id = m && byId(m[1]) ? m[1] : 'home';
+    if (id !== currentId) go(id);
+  });
+
+  if (!LuaEngine.available) {
+    const warn = el('div', 'alert', 'Интерпретатор Lua не загрузился. Проверьте подключение к интернету и обновите страницу: без него код запускать нельзя.');
+    warn.setAttribute('role', 'alert');
+    $('#alertSlot').append(warn);
+  }
+  renderProgress();
+  const m0 = /^#l-([\w-]+)$/.exec(location.hash);
+  go(m0 && byId(m0[1]) ? m0[1] : 'home');
+})();
+
+</script>
+</body>
+</html>
